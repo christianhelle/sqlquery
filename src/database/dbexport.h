@@ -30,7 +30,19 @@ private:
         "NCHAR",
         "NATIVE CHARACTER",
         "NVARCHAR",
-        "CLOB"
+        "CLOB",
+        // Server Providers: values that read as text and have to be quoted.
+        // Matched as substrings, so DATE also covers DATETIME and DATETIME2,
+        // and TIME covers TIMESTAMP and TIME WITH TIME ZONE.
+        "CHAR",
+        "DATE",
+        "TIME",
+        "UUID",
+        "UNIQUEIDENTIFIER",
+        "JSON",
+        "XML",
+        "ENUM",
+        "INTERVAL"
     };
 };
 
