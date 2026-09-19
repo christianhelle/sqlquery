@@ -74,12 +74,12 @@ if ($IsWindows) {
     }
 
     New-Item -ItemType Directory -Path .\build\Release -Force
-    Copy-Item .\build\SQLiteQueryAnalyzer.exe .\build\Release\SQLiteQueryAnalyzer.exe
-    & "$QtPath\bin\windeployqt.exe" .\build\Release\SQLiteQueryAnalyzer.exe
+    Copy-Item .\build\SQLQueryAnalyzer.exe .\build\Release\SQLQueryAnalyzer.exe
+    & "$QtPath\bin\windeployqt.exe" .\build\Release\SQLQueryAnalyzer.exe
     
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`nRunning tests..."
-        $testExe = ".\build\SQLiteQueryTests.exe"
+        $testExe = ".\build\SQLQueryTests.exe"
         if (Test-Path $testExe) {
             $env:PATH = "$QtPath\bin;$QtPath\lib;$env:PATH"
             Write-Host "Executing: $testExe"
@@ -127,9 +127,9 @@ if ($IsLinux) {
 
 if ($IsMacOS -And $Package) {
     
-    cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/sqlitequery
+    cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/sqlquery
     cmake --build build --config Release --parallel 32
     if ($Package) {
-        macdeployqt build/SQLiteQueryAnalyzer.app -dmg -appstore-compliant
+        macdeployqt build/SQLQueryAnalyzer.app -dmg -appstore-compliant
     }
 }

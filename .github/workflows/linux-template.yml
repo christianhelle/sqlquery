@@ -66,21 +66,21 @@ jobs:
         with:
           name: Linux_Binary_v${{ inputs.version }}
           path: |
-            SQLiteQueryAnalyzer-${{ inputs.version }}-Linux.zip
+            SQLQueryAnalyzer-${{ inputs.version }}-Linux.zip
 
       - name: Publish Debian package
         uses: actions/upload-artifact@v4
         with:
           name: Debian_Package_v${{ inputs.version }}
           path: |
-            SQLiteQueryAnalyzer-${{ inputs.version }}-Linux.deb
+            SQLQueryAnalyzer-${{ inputs.version }}-Linux.deb
 
       - name: Publish RPM package
         uses: actions/upload-artifact@v4
         with:
           name: RPM_Package_v${{ inputs.version }}
           path: |
-            SQLiteQueryAnalyzer-${{ inputs.version }}-Linux.rpm
+            SQLQueryAnalyzer-${{ inputs.version }}-Linux.rpm
 
     #- name: Publish Snap package
     #  uses: actions/upload-artifact@v4

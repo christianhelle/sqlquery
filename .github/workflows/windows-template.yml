@@ -75,19 +75,19 @@ jobs:
             -DCMAKE_CXX_FLAGS="/Zc:__cplusplus /permissive-" `
             -B build
           cmake --build build --config Release
-          ${{ runner.temp }}\Qt\6.10.3\msvc2022_64\bin\windeployqt.exe .\build\Release\SQLiteQueryAnalyzer.exe
+          ${{ runner.temp }}\Qt\6.10.3\msvc2022_64\bin\windeployqt.exe .\build\Release\SQLQueryAnalyzer.exe
           rm .\build\Release\vc_redist.x64.exe
 
       - name: Zip build
         working-directory: ${{ runner.temp }}
         run: |
-          7z a SQLiteQueryAnalyzer_Windows.zip ${{ github.workspace }}\build\Release\SQLiteQueryAnalyzer.exe -r
+          7z a SQLQueryAnalyzer_Windows.zip ${{ github.workspace }}\build\Release\SQLQueryAnalyzer.exe -r
 
       - name: Publish Build
         uses: actions/upload-artifact@master
         with:
           name: SQLiteQuerAnalyzer_Windows_v${{ inputs.version }}
-          path: ${{ runner.temp }}\SQLiteQueryAnalyzer_Windows.zip
+          path: ${{ runner.temp }}\SQLQueryAnalyzer_Windows.zip
 
       - name: Inno Setup
         working-directory: ${{ github.workspace }}
@@ -98,19 +98,19 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: SQLiteQuerAnalyzer_Windows_Installer_v${{ inputs.version }}
-          path: ${{ github.workspace }}\artifacts\SQLiteQueryAnalyzer-Setup.exe
+          path: ${{ github.workspace }}\artifacts\SQLQueryAnalyzer-Setup.exe
 
       - name: Build Chocolatey Package
         working-directory: ${{ github.workspace }}\dist\chocolatey
         env:
           VERSION: ${{ inputs.version }}
-        run: choco pack sqlitequery.nuspec --version $env:VERSION
+        run: choco pack sqlquery.nuspec --version $env:VERSION
 
       - name: Publish Chocolatey Package
         uses: actions/upload-artifact@master
         with:
           name: ChocolateyPackage
-          path: ${{ github.workspace }}\dist\chocolatey\sqlitequery.${{ inputs.version }}.nupkg
+          path: ${{ github.workspace }}\dist\chocolatey\sqlquery.${{ inputs.version }}.nupkg
 
       # Only publish to Chocolatey when explicitly triggered by the release workflow on master branch
       - name: Upload Package to Chocolatey
@@ -121,4 +121,4 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           choco apiKey --key ${{ secrets.CHOCOLATEY_API_KEY }} --source https://push.chocolatey.org/
-          choco push sqlitequery.$env:VERSION.nupkg --source https://push.chocolatey.org/
+          choco push sqlquery.$env:VERSION.nupkg --source https://push.chocolatey.org/

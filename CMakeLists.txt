@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(SQLiteQueryAnalyzer VERSION 1.0 LANGUAGES C CXX)
+project(SQLQueryAnalyzer VERSION 1.0 LANGUAGES C CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
@@ -16,7 +16,7 @@ set_source_files_properties(${app_icon_macos}
 if(DEFINED EXECUTABLE_NAME)
   set(APP_NAME ${EXECUTABLE_NAME})
 else()
-  set(APP_NAME SQLiteQueryAnalyzer)
+  set(APP_NAME SQLQueryAnalyzer)
 endif()
 
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
@@ -105,12 +105,12 @@ target_link_libraries(${APP_NAME} PRIVATE
 )
 
 if ((QT_VERSION_MAJOR GREATER 4))
-  target_link_libraries(SQLiteQueryAnalyzer PRIVATE
+  target_link_libraries(SQLQueryAnalyzer PRIVATE
             Qt::Widgets
     )
 endif ()
 
-install(TARGETS SQLiteQueryAnalyzer
+install(TARGETS SQLQueryAnalyzer
         BUNDLE DESTINATION .
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
@@ -122,12 +122,12 @@ install(TARGETS SQLiteQueryAnalyzer
 # )
 # install(SCRIPT ${deploy_script})
 
-set(CPACK_PACKAGE_NAME SQLiteQueryAnalyzer)
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "SQLite Query Analyzer")
+set(CPACK_PACKAGE_NAME SQLQueryAnalyzer)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "SQL Query Analyzer")
 set(CPACK_PACKAGE_VENDOR "Christian Resma Helle")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_VERBATIM_VARIABLES ON)
-set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/sqlitequery")
+set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/sqlquery")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christian Resma Helle <christian.helle@outlook.com>")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS libxcb-xinerama0)
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/dist/postinst;${CMAKE_CURRENT_SOURCE_DIR}/dist/prerm")

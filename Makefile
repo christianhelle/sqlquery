@@ -1,4 +1,4 @@
-# Makefile - Build automation for SQLiteQueryAnalyzer
+# Makefile - Build automation for SQLQueryAnalyzer
 
 BUILD_DIR ?= build
 INSTALL_PREFIX ?= ./linux
@@ -6,7 +6,7 @@ CMAKE ?= cmake
 CPACK ?= cpack
 MACDEPLOYQT ?= macdeployqt
 NPROC ?= $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
-TEST_EXE ?= $(BUILD_DIR)/tests/SQLiteQueryTests
+TEST_EXE ?= $(BUILD_DIR)/tests/SQLQueryTests
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
@@ -14,7 +14,7 @@ CONFIGURE_FLAGS = -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Release
 DEFAULT_TARGETS = build test
 INSTALL_TARGETS = build
 PACKAGE_TARGETS = build
-PACKAGE_CMD = $(MACDEPLOYQT) $(BUILD_DIR)/SQLiteQueryAnalyzer.app -dmg -appstore-compliant
+PACKAGE_CMD = $(MACDEPLOYQT) $(BUILD_DIR)/SQLQueryAnalyzer.app -dmg -appstore-compliant
 else
 CONFIGURE_FLAGS = -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX)
 DEFAULT_TARGETS = cmake-install test
@@ -48,12 +48,12 @@ ifeq ($(UNAME_S),Darwin)
 	@echo "Nothing extra to install on macOS; run 'make package' to create a DMG"
 else
 	mkdir -p "$(HOME)/.local/bin"
-	rm -rf "$(HOME)/.local/opt/sqlitequery"
-	mkdir -p "$(HOME)/.local/opt/sqlitequery"
-	cp -rf "$(INSTALL_PREFIX)"/* "$(HOME)/.local/opt/sqlitequery"
-	rm -f "$(HOME)/.local/bin/sqlitequery"
-	ln -sf "$(HOME)/.local/opt/sqlitequery/bin/SQLiteQueryAnalyzer" "$(HOME)/.local/bin/sqlitequery"
-	@echo "Installed to ~/.local/bin/sqlitequery"
+	rm -rf "$(HOME)/.local/opt/sqlquery"
+	mkdir -p "$(HOME)/.local/opt/sqlquery"
+	cp -rf "$(INSTALL_PREFIX)"/* "$(HOME)/.local/opt/sqlquery"
+	rm -f "$(HOME)/.local/bin/sqlquery"
+	ln -sf "$(HOME)/.local/opt/sqlquery/bin/SQLQueryAnalyzer" "$(HOME)/.local/bin/sqlquery"
+	@echo "Installed to ~/.local/bin/sqlquery"
 endif
 
 package: $(PACKAGE_TARGETS)
