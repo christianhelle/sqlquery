@@ -47,12 +47,13 @@ public:
     QList<QAbstractItemModel *> runScriptPaged(const QString &script,
                                                QStringList *errors = nullptr) const;
 
-    // SQLite's own count of how many times the Schema has changed. Comparing
-    // it either side of a Script says whether the Schema actually changed --
-    // which a statement cannot be read off its text: a CREATE inside a
-    // transaction that rolls back changes nothing, and ALTER changes plenty.
-    // -1 when it could not be read.
-    [[nodiscard]] int schemaVersion() const;
+    // A value that changes whenever the Schema does: SQLite's own change
+    // counter, or a digest of a server's catalog. Comparing it either side of
+    // a Script says whether the Schema actually changed -- which a statement
+    // cannot be read off its text: a CREATE inside a transaction that rolls
+    // back changes nothing, and ALTER changes plenty.
+    // Empty when it could not be read.
+    [[nodiscard]] QString schemaFingerprint() const;
 
     [[nodiscard]] QAbstractItemModel *previewTablePaged(const QString &tableName,
                                                         QString *error = nullptr,

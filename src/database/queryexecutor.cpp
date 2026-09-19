@@ -44,12 +44,12 @@ QList<QAbstractItemModel *> QueryExecutor::runScriptPaged(const QString &script,
     return runStatementsPaged(script.split(";", Qt::SkipEmptyParts), errors);
 }
 
-int QueryExecutor::schemaVersion() const {
-    const QueryResult result = database->runStatement("PRAGMA schema_version");
+QString QueryExecutor::schemaFingerprint() const {
+    const QueryResult result = database->runStatement(database->dialect().schemaFingerprintQuery());
     if (!result.ok || result.rows.isEmpty() || result.rows.first().values.isEmpty())
-        return -1;
+        return {};
 
-    return result.rows.first().values.first().toInt();
+    return result.rows.first().values.first().toString();
 }
 
 QueryResult QueryExecutor::dropTable(const QString &tableName, const QString &schema) const {

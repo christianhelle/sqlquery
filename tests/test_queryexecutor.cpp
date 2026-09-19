@@ -220,23 +220,23 @@ TEST_F(QueryExecutorTest, RunScriptPagedSplitsOnSemicolons) {
     qDeleteAll(models);
 }
 
-TEST_F(QueryExecutorTest, SchemaVersionRisesWhenTheSchemaChanges) {
-    const int before = executor->schemaVersion();
-    ASSERT_GE(before, 0);
+TEST_F(QueryExecutorTest, SchemaFingerprintChangesWhenTheSchemaChanges) {
+    const QString before = executor->schemaFingerprint();
+    ASSERT_FALSE(before.isEmpty());
 
     QStringList sql;
     sql << "CREATE TABLE later (id INTEGER PRIMARY KEY)";
     executor->runStatements(sql);
 
-    EXPECT_NE(executor->schemaVersion(), before);
+    EXPECT_NE(executor->schemaFingerprint(), before);
 }
 
-TEST_F(QueryExecutorTest, SchemaVersionHoldsStillForAPlainSelect) {
-    const int before = executor->schemaVersion();
+TEST_F(QueryExecutorTest, SchemaFingerprintHoldsStillForAPlainSelect) {
+    const QString before = executor->schemaFingerprint();
 
     QStringList sql;
     sql << "SELECT * FROM test_users";
     executor->runStatements(sql);
 
-    EXPECT_EQ(executor->schemaVersion(), before);
+    EXPECT_EQ(executor->schemaFingerprint(), before);
 }
