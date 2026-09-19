@@ -1,0 +1,93 @@
+name: Tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: SqlQuery_2026
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: SqlQuery_2026
+          MARIADB_DATABASE: test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: SqlQuery_2026
+        ports:
+          - 1433:1433
+
+    env:
+      SQLQUERY_TEST_PG: postgres://postgres:SqlQuery_2026@localhost:5432/postgres
+      SQLQUERY_TEST_MYSQL: mysql://root:SqlQuery_2026@127.0.0.1:3306/test
+      SQLQUERY_TEST_MSSQL: mssql://sa:SqlQuery_2026@localhost:1433/master?trust=1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.11.2"
+
+      - name: Install database client libraries
+        run: |
+          source /etc/os-release
+          curl -sSL -o packages-microsoft-prod.deb "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb"
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y libpq5 libmysqlclient21 libmariadb3 unixodbc msodbcsql18
+
+      - name: List Qt SQL drivers
+        run: |
+          ls "$QT_ROOT_DIR/plugins/sqldrivers"
+          for plugin in "$QT_ROOT_DIR"/plugins/sqldrivers/*.so; do
+            echo "== $plugin"; ldd "$plugin" | grep "not found" || true
+          done
+
+      - name: Build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build --parallel
+
+      - name: Wait for SQL Server
+        run: |
+          for i in $(seq 1 60); do
+            if /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P SqlQuery_2026 -C -Q "SELECT 1" > /dev/null 2>&1; then
+              echo "SQL Server is up"; exit 0
+            fi
+            sleep 2
+          done
+          echo "SQL Server did not come up"; exit 1
+
+      - name: Test
+        env:
+          QT_QPA_PLATFORM: offscreen
+          QT_FORCE_STDERR_LOGGING: "1"
+        run: ./build/tests/SQLQueryTests
