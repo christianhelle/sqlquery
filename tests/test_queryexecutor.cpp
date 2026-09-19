@@ -190,6 +190,19 @@ TEST_F(QueryExecutorTest, DropsATableNamedAfterAReservedWord) {
     EXPECT_TRUE(executor->dropTable("order").ok);
 }
 
+// SQLite names its own database `main`, which stands in for a server's schema.
+TEST_F(QueryExecutorTest, PreviewsATableQualifiedByItsSchema) {
+    const QueryResult result = executor->previewTable("test_users", 1, "main");
+
+    EXPECT_TRUE(result.ok) << result.error.toStdString();
+    EXPECT_EQ(result.rows.size(), 1);
+}
+
+TEST_F(QueryExecutorTest, DropsATableQualifiedByItsSchema) {
+    EXPECT_TRUE(executor->dropTable("test_users", "main").ok);
+    EXPECT_FALSE(executor->previewTable("test_users").ok);
+}
+
 TEST_F(QueryExecutorTest, ReportsWhyAMissingTableCouldNotBeDropped) {
     const QueryResult dropped = executor->dropTable("no_such_table");
 
