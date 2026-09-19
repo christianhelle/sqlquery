@@ -29,6 +29,7 @@ set(TEST_SRCS
     test_connectioninfo.cpp
     test_sqldialect.cpp
     test_recentconnections.cpp
+    test_connectiondialog.cpp
     test_sqlidentifier.cpp
     test_dbanalyzer.cpp
     test_dbexportdata.cpp
