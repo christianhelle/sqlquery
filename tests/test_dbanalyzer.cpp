@@ -260,3 +260,12 @@ TEST_F(DbAnalyzerTest, AnalyzeSkipsEveryInternalSqliteTable) {
     for (const auto &table : info.tables)
         EXPECT_FALSE(table.name.startsWith("sqlite_")) << table.name.toStdString();
 }
+
+TEST(TestConnectionTest, SucceedsForAWritableSqliteFile) {
+    QTemporaryDir dir;
+    EXPECT_TRUE(testConnection(ConnectionInfo::sqliteFile(dir.path() + "/probe.db")).isEmpty());
+}
+
+TEST(TestConnectionTest, ReportsWhyItCouldNotOpen) {
+    EXPECT_FALSE(testConnection(ConnectionInfo::sqliteFile("/no/such/dir/probe.db")).isEmpty());
+}
