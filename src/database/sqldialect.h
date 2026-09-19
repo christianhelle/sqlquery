@@ -2,6 +2,7 @@
 #define SQLDIALECT_H
 
 #include <QString>
+#include <QStringList>
 
 #include "connectioninfo.h"
 
@@ -53,6 +54,11 @@ public:
 
     // Reclaims unused space. Empty when the Provider has no such statement.
     [[nodiscard]] virtual QString shrinkStatement() const = 0;
+
+    // Splits a Script into the pieces sent to the server one at a time. By
+    // default that is on semicolons, which does not yet understand a semicolon
+    // inside a string literal or a trigger body.
+    [[nodiscard]] virtual QStringList splitScript(const QString &script) const;
 
     static const SqlDialect &forProvider(Provider provider);
 };

@@ -50,6 +50,10 @@ QString SqlDialect::quoteLiteral(const QString &text) const {
     return delimited(text, QLatin1Char('\''), QLatin1Char('\''));
 }
 
+QStringList SqlDialect::splitScript(const QString &script) const {
+    return script.split(QLatin1Char(';'), Qt::SkipEmptyParts);
+}
+
 QString SqlDialect::selectAll(const QString &qualifiedTable, const int limit) const {
     QString sql = QStringLiteral("SELECT * FROM ") + qualifiedTable;
     if (limit > 0)

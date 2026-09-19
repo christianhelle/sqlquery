@@ -7,8 +7,7 @@ QueryExecutor::QueryExecutor(IDatabase *database)
 }
 
 QList<QueryResult> QueryExecutor::runScript(const QString &script, QStringList *errors) {
-    const QStringList raw = script.split(";", Qt::SkipEmptyParts);
-    return runStatements(raw, errors);
+    return runStatements(database->dialect().splitScript(script), errors);
 }
 
 QList<QueryResult> QueryExecutor::runStatements(const QStringList &statements,
@@ -41,7 +40,7 @@ QueryResult QueryExecutor::previewTable(const QString &tableName, const int limi
 
 QList<QAbstractItemModel *> QueryExecutor::runScriptPaged(const QString &script,
                                                           QStringList *errors) const {
-    return runStatementsPaged(script.split(";", Qt::SkipEmptyParts), errors);
+    return runStatementsPaged(database->dialect().splitScript(script), errors);
 }
 
 QString QueryExecutor::schemaFingerprint() const {
