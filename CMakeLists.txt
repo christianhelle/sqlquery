@@ -32,6 +32,8 @@ endif()
 set(COMMON_SRCS
   src/main.cpp
   src/database/idatabase.h
+  src/database/connectioninfo.cpp
+  src/database/connectioninfo.h
   src/database/queryresult.h
   src/database/queryexecutor.cpp
   src/database/queryexecutor.h

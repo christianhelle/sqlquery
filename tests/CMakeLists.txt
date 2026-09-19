@@ -44,6 +44,7 @@ add_executable(${PROJECT_NAME} ${TEST_SRCS})
 
 # Add production source files that tests need
 set(PROD_SRCS
+    ../src/database/connectioninfo.cpp
     ../src/database/sqlitedatabase.cpp
     ../src/database/inmemorydatabase.cpp
     ../src/database/pagedresultmodel.cpp
