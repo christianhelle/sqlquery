@@ -77,6 +77,8 @@ jobs:
           cmake --build build --config Release
           ${{ runner.temp }}\Qt\6.10.3\msvc2022_64\bin\windeployqt.exe .\build\Release\SQLQueryAnalyzer.exe
           rm .\build\Release\vc_redist.x64.exe
+          Copy-Item .\deps\postgresql\*.dll .\build\Release\
+          Copy-Item .\deps\postgresql\LICENSES.txt .\build\Release\LICENSES-postgresql.txt
 
       - name: Zip build
         working-directory: ${{ runner.temp }}
