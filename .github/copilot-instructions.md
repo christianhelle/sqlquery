@@ -1,6 +1,6 @@
 # SQL Query Analyzer
 
-SQL Query Analyzer is a cross-platform Qt6-based C++ desktop application that provides both GUI and CLI interfaces for managing SQLite databases. It supports Linux, Windows, and macOS platforms.
+SQL Query Analyzer is a cross-platform Qt6-based C++ desktop application that provides both GUI and CLI interfaces for managing SQLite, PostgreSQL, SQL Server and MySQL databases. It supports Linux, Windows, and macOS platforms.
 
 Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
 
