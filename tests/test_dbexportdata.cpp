@@ -316,3 +316,23 @@ TEST_F(DbDataExportTest, CsvHeaderKeepsColumnNamesUndelimited) {
 
     EXPECT_EQ(header, "id,name,price");
 }
+
+// A server's date, uuid and json columns read back as text. In a CSV they are
+// quoted like any other text, so a comma inside one cannot split the row.
+TEST_F(DbDataExportTest, QuotesServerTextLikeTypesInCsv) {
+    runSql({"CREATE TABLE events (id INTEGER PRIMARY KEY, at TIMESTAMP, ref UUID, doc JSONB)",
+            R"(INSERT INTO events (at, ref, doc) VALUES ('2026-09-19 10:00', 'abc', '{"a":1,"b":2}'))"});
+
+    QTemporaryDir exportDir;
+    DbDataExport exporter(reanalyze());
+    CancellationTokenSource tcs;
+    const CancellationToken token = tcs.get();
+    ExportDataProgress progress;
+    exporter.exportDataToCsvFile(db.get(), exportDir.path(), ",", &token, &progress);
+
+    QFile file(exportDir.path() + "/events.csv");
+    ASSERT_TRUE(file.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QString content = QTextStream(&file).readAll();
+
+    EXPECT_TRUE(content.contains(R"("2026-09-19 10:00","abc","{""a"":1,""b"":2}")"));
+}
