@@ -27,4 +27,8 @@ private:
     QString connectionName;
 };
 
+// Opens the Connection on a throwaway Database and closes it again. Empty when
+// it opened, else why it did not.
+QString testConnection(const ConnectionInfo &connection);
+
 #endif // PROVIDERDATABASE_H

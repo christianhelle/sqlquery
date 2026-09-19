@@ -51,3 +51,14 @@ bool ProviderDatabase::open() {
 
     return database.open();
 }
+
+QString testConnection(const ConnectionInfo &connection) {
+    ProviderDatabase database;
+    database.setConnection(connection);
+    if (database.open()) {
+        database.close();
+        return {};
+    }
+    const QString error = database.lastError();
+    return error.isEmpty() ? QStringLiteral("Unable to connect") : error;
+}
