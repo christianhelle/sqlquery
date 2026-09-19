@@ -68,6 +68,7 @@ set(PROD_SRCS
     ../src/gui/highlighter.cpp
     ../src/gui/sessionmanager.cpp
     ../src/gui/prompts.cpp
+    ../src/gui/connectiondialog.cpp
     ../src/database/dbtree.cpp
     ../src/settings/settings.cpp
     ../src/settings/recentconnections.cpp

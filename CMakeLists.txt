@@ -80,6 +80,8 @@ set(COMMON_SRCS
   src/database/dbexportdata.cpp
   src/database/dbexportdata.h
   src/database/progress.h
+   src/gui/connectiondialog.cpp
+   src/gui/connectiondialog.h
    src/gui/prompts.cpp
    src/gui/prompts.h
    src/gui/sessionmanager.cpp
