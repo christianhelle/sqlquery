@@ -1,9 +1,10 @@
 name: sqlquery
 base: core24
-summary: Lightweight cross-platform SQLite database explorer
+summary: Lightweight cross-platform SQL database explorer
 description: |
   SQL Query Analyzer is a lightweight and efficient desktop utility designed
-  to simplify the process of managing SQLite databases.
+  to simplify the process of managing SQLite, PostgreSQL, SQL Server and
+  MySQL/MariaDB databases.
 
   It provides an intuitive interface for executing queries and direct table editing,
   making database operations seamless and straightforward.
@@ -32,6 +33,7 @@ apps:
       - x11
       - opengl
       - home
+      - network
 
 parts:
   sqlquery:
@@ -43,6 +45,10 @@ parts:
       - libqt6gui6
       - libqt6widgets6
       - libqt6sql6
+      - libqt6sql6-sqlite
+      - libqt6sql6-psql
+      - libqt6sql6-mysql
+      - libqt6sql6-odbc
       - libqt6svg6
       - qt6-qpa-plugins
       - qt6-wayland
