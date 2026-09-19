@@ -33,7 +33,7 @@ private:
 
     // The column list of an INSERT statement, where the same names are
     // Identifiers and have to be delimited.
-    static QStringList quotedColumnNames(const Table &table);
+    [[nodiscard]] QStringList quotedColumnNames(const Table &table) const;
 
     [[nodiscard]] QList<bool> getTextColumnFlags(const Table &table) const;
 

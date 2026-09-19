@@ -1,7 +1,6 @@
 #include "dbexportdata.h"
 #include <QFile>
 
-#include "sqlidentifier.h"
 
 QStringList DbDataExport::columnNames(const Table &table) {
     QStringList names;
@@ -12,11 +11,11 @@ QStringList DbDataExport::columnNames(const Table &table) {
     return names;
 }
 
-QStringList DbDataExport::quotedColumnNames(const Table &table) {
+QStringList DbDataExport::quotedColumnNames(const Table &table) const {
     QStringList names;
     names.reserve(table.columns.size());
     for (const auto &column : table.columns) {
-        names.append(quotedIdentifier(column.name));
+        names.append(dialect().quoteIdentifier(column.name));
     }
     return names;
 }
@@ -73,15 +72,16 @@ void DbDataExport::exportDataToSqlFile(IDatabase *database,
         }
         out << "-- " << table.name << "\n";
 
+        const auto tableName = qualifiedName(table);
         const auto columns = quotedColumnNames(table).join(", ");
         const auto isTextColumn = getTextColumnFlags(table);
         const QueryResult streamResult = database->streamRows(
-            QString("SELECT * FROM %1").arg(quotedIdentifier(table.name)),
+            dialect().selectAll(tableName),
             [&](const QList<QVariant> &values) {
                 if (cancellationToken->isCancellationRequested())
                     return false;
                 const auto valueList = getColumnValueDefs(isTextColumn, values).join(", ");
-                out << "INSERT INTO " << quotedIdentifier(table.name) << "(" << columns << ") ";
+                out << "INSERT INTO " << tableName << "(" << columns << ") ";
                 out << "VALUES (" << valueList << ");\n";
                 progress->increment();
                 return true;
@@ -107,7 +107,8 @@ void DbDataExport::exportDataToCsvFile(IDatabase *database,
             continue;
         }
 
-        const auto filename = outputFolder + "/" + table.name + ".csv";
+        const auto baseName = table.schema.isEmpty() ? table.name : table.schema + "." + table.name;
+        const auto filename = outputFolder + "/" + baseName + ".csv";
         const auto file = std::make_unique<QFile>(filename);
         if (!file->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
             return;
@@ -119,7 +120,7 @@ void DbDataExport::exportDataToCsvFile(IDatabase *database,
         out << columns << "\n";
 
         const QueryResult streamResult = database->streamRows(
-            QString("SELECT * FROM %1").arg(quotedIdentifier(table.name)),
+            dialect().selectAll(qualifiedName(table)),
             [&](const QList<QVariant> &values) {
                 if (cancellationToken->isCancellationRequested())
                     return false;

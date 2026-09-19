@@ -2,7 +2,6 @@
 
 #include <QFile>
 
-#include "sqlidentifier.h"
 
 QString DbSchemaExport::exportSchema() const {
     QStringList createTableScripts;
@@ -10,13 +9,13 @@ QString DbSchemaExport::exportSchema() const {
         if (isInternalTable(table)) {
             continue;
         }
-        QString createTableScript = QString("CREATE TABLE %1 (").arg(quotedIdentifier(table.name));
+        QString createTableScript = QString("CREATE TABLE %1 (").arg(qualifiedName(table));
         QStringList columnDefinitions;
         for (const auto &column: table.columns) {
             // The Column name is an Identifier; the declared type is not,
             // and delimiting it would break a type like VARCHAR(50).
             QString columnDefinition = QString("\n  %1 %2").arg(
-                quotedIdentifier(column.name), column.dataType);
+                dialect().quoteIdentifier(column.name), column.dataType);
             if (column.primaryKey) {
                 columnDefinition += " PRIMARY KEY";
             }
