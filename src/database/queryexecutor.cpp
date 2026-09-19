@@ -1,6 +1,6 @@
 #include "queryexecutor.h"
 
-#include "sqlidentifier.h"
+#include "sqldialect.h"
 
 QueryExecutor::QueryExecutor(IDatabase *database)
     : database(database) {
@@ -33,12 +33,10 @@ QList<QueryResult> QueryExecutor::runStatements(const QStringList &statements,
     return results;
 }
 
-QueryResult QueryExecutor::previewTable(const QString &tableName, int limit) const {
-    QString sql = QString("SELECT * FROM %1").arg(quotedIdentifier(tableName));
-    if (limit > 0) {
-        sql += QString(" LIMIT %1").arg(limit);
-    }
-    return database->runStatement(sql);
+QueryResult QueryExecutor::previewTable(const QString &tableName, const int limit,
+                                        const QString &schema) const {
+    const SqlDialect &dialect = database->dialect();
+    return database->runStatement(dialect.selectAll(dialect.qualifiedName(schema, tableName), limit));
 }
 
 QList<QAbstractItemModel *> QueryExecutor::runScriptPaged(const QString &script,
@@ -54,9 +52,9 @@ int QueryExecutor::schemaVersion() const {
     return result.rows.first().values.first().toInt();
 }
 
-QueryResult QueryExecutor::dropTable(const QString &tableName) const {
+QueryResult QueryExecutor::dropTable(const QString &tableName, const QString &schema) const {
     return database->runStatement(
-        QString("DROP TABLE %1").arg(quotedIdentifier(tableName)));
+        QString("DROP TABLE %1").arg(database->dialect().qualifiedName(schema, tableName)));
 }
 
 QList<QAbstractItemModel *> QueryExecutor::runStatementsPaged(const QStringList &statements,
@@ -79,6 +77,8 @@ QList<QAbstractItemModel *> QueryExecutor::runStatementsPaged(const QStringList 
 }
 
 QAbstractItemModel *QueryExecutor::previewTablePaged(const QString &tableName,
-                                                     QString *error) const {
-    return database->createResultModel(QString("SELECT * FROM %1").arg(quotedIdentifier(tableName)), error);
+                                                     QString *error,
+                                                     const QString &schema) const {
+    const SqlDialect &dialect = database->dialect();
+    return database->createResultModel(dialect.selectAll(dialect.qualifiedName(schema, tableName)), error);
 }

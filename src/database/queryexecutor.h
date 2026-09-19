@@ -19,12 +19,15 @@ public:
     QList<QueryResult> runStatements(const QStringList &statements,
                                      QStringList *errors = nullptr);
 
-    [[nodiscard]] QueryResult previewTable(const QString &tableName, int limit = -1) const;
+    // Every row of a Table, capped at `limit` rows when limit > 0. `schema` is
+    // the Table's namespace, empty for Providers without one.
+    [[nodiscard]] QueryResult previewTable(const QString &tableName, int limit = -1,
+                                           const QString &schema = {}) const;
 
     // Drops a Table. The name is delimited here rather than by the caller, so
     // a Table whose name holds a quote or a reserved word drops like any other
     // and no caller outside this module has to build the statement.
-    QueryResult dropTable(const QString &tableName) const;
+    QueryResult dropTable(const QString &tableName, const QString &schema = {}) const;
 
     // Display variants. Each returns a lazily fetched model whose rows are read
     // in pages as they are scrolled into view, so a result set of any size can
@@ -52,7 +55,8 @@ public:
     [[nodiscard]] int schemaVersion() const;
 
     [[nodiscard]] QAbstractItemModel *previewTablePaged(const QString &tableName,
-                                                        QString *error = nullptr) const;
+                                                        QString *error = nullptr,
+                                                        const QString &schema = {}) const;
 
 private:
     IDatabase *database;
