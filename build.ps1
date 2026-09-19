@@ -76,7 +76,11 @@ if ($IsWindows) {
     New-Item -ItemType Directory -Path .\build\Release -Force
     Copy-Item .\build\SQLQueryAnalyzer.exe .\build\Release\SQLQueryAnalyzer.exe
     & "$QtPath\bin\windeployqt.exe" .\build\Release\SQLQueryAnalyzer.exe
-    
+
+    # windeployqt ships qsqlpsql.dll but not libpq.dll or what libpq loads
+    Copy-Item .\deps\postgresql\*.dll .\build\Release\
+    Copy-Item .\deps\postgresql\LICENSES.txt .\build\Release\LICENSES-postgresql.txt
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`nRunning tests..."
         $testExe = ".\build\SQLQueryTests.exe"
