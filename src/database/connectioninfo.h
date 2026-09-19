@@ -30,6 +30,13 @@ struct ConnectionInfo {
     // SQL Server only: accept a self-signed server certificate.
     bool trustServerCertificate = false;
 
+    // A SQLite Connection to the file at `path`.
+    static ConnectionInfo sqliteFile(const QString &path) {
+        ConnectionInfo info;
+        info.filePath = path;
+        return info;
+    }
+
     static QString defaultOdbcDriver() { return QStringLiteral("ODBC Driver 18 for SQL Server"); }
 
     [[nodiscard]] bool isFile() const { return provider == Provider::Sqlite; }

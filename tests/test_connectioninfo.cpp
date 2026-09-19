@@ -8,6 +8,12 @@ TEST(ConnectionInfoTest, BarePathIsASqliteFile) {
     EXPECT_EQ(info.filePath, "/home/me/data.db");
 }
 
+TEST(ConnectionInfoTest, SqliteFileBuildsAFileConnection) {
+    const auto info = ConnectionInfo::sqliteFile("x.db");
+    EXPECT_TRUE(info.isFile());
+    EXPECT_EQ(info.filePath, "x.db");
+}
+
 TEST(ConnectionInfoTest, WindowsPathIsNotMistakenForAScheme) {
     const auto info = ConnectionInfo::fromUrl("C:\\data\\app.db");
     EXPECT_EQ(info.provider, Provider::Sqlite);
