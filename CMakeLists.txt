@@ -34,6 +34,8 @@ set(COMMON_SRCS
   src/database/idatabase.h
   src/database/connectioninfo.cpp
   src/database/connectioninfo.h
+  src/database/sqldialect.cpp
+  src/database/sqldialect.h
   src/database/queryresult.h
   src/database/queryexecutor.cpp
   src/database/queryexecutor.h
