@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "../settings/settings.h"
 #include "../database/dbexportschema.h"
+#include "connectiondialog.h"
 #include "prompts.h"
 
 #include <QMessageBox>
@@ -127,6 +128,10 @@ void MainWindow::connectSignalSlots() const {
             SIGNAL(triggered()),
             this,
             SLOT(openExistingFile()));
+    connect(ui->actionConnect,
+            SIGNAL(triggered()),
+            this,
+            SLOT(connectToDatabase()));
     connect(ui->actionSave,
             SIGNAL(triggered()),
             this,
@@ -280,39 +285,84 @@ void MainWindow::createNewFile() {
         return;
 
     const QString filepath = Prompts::getFilePath(this, QFileDialog::AcceptSave);
-    this->openDatabase(filepath);
-    sessionManager->addRecentFile(filepath);
+    if (!filepath.isEmpty())
+        this->openConnection(ConnectionInfo::sqliteFile(filepath));
 }
 
-void MainWindow::openDatabase(const QString &filename) {
-    if (blockedByExport())
+void MainWindow::openDatabase(const QString &connection) {
+    const ConnectionInfo info = ConnectionInfo::fromUrl(connection);
+    if (info.isEmpty())
         return;
+
+    // A server Connection read back from the recents or the session has no
+    // password, so rather than fail it goes to the dialog to be completed.
+    if (!info.isFile() && info.password.isEmpty() && !info.integratedAuth) {
+        promptForConnection(info);
+        return;
+    }
+
+    if (!openConnection(info) && !info.isFile())
+        promptForConnection(info);
+}
+
+bool MainWindow::openConnection(const ConnectionInfo &connection) {
+    if (blockedByExport())
+        return false;
 
     if (!this->database->connection().isEmpty()) {
         this->queryPresenter->clearResults();
     }
 
-    this->database->setConnection(ConnectionInfo::sqliteFile(filename));
+    this->database->setConnection(connection);
     if (!this->database->open()) {
-        return;
+        const QString error = this->database->lastError();
+        this->showMessage(error.isEmpty() ? "Unable to open " + connection.displayName() : error);
+        ui->queryResultTab->setCurrentIndex(1);
+        return false;
     }
 
     this->analyzeDatabase();
-    sessionManager->addRecentFile(filename);
+    sessionManager->addRecentFile(connection.toUrl());
+    sessionManager->loadRecentFiles(recentFilesMenu.get(), this);
 
     ui->queryResultMessagesTextEdit->clear();
     ui->tabWidget->setCurrentIndex(0);
     ui->textEdit->clear();
+    ui->actionShrink->setEnabled(this->database->canShrink());
 
-    this->setWindowTitle("SQL Query Analyzer - " + filename);
+    this->setWindowTitle("SQL Query Analyzer - " + connection.displayName());
+    return true;
+}
+
+void MainWindow::promptForConnection(const ConnectionInfo &initial) {
+    if (blockedByExport())
+        return;
+
+    ConnectionDialog dialog(this);
+    dialog.setConnection(initial);
+    // Stays up until a Connection opens or the user gives up, so a mistyped
+    // password costs a retry rather than the whole form.
+    while (dialog.exec() == QDialog::Accepted) {
+        const ConnectionInfo connection = dialog.connection();
+        if (connection.isEmpty())
+            continue;
+        if (openConnection(connection))
+            return;
+        Prompts::showError(&dialog, this->database->lastError());
+    }
+}
+
+void MainWindow::connectToDatabase() {
+    const ConnectionInfo current = this->database->connection();
+    promptForConnection(current.isFile() ? ConnectionInfo() : current);
 }
 
 void MainWindow::openExistingFile() {
     if (blockedByExport())
         return;
     const auto filepath = Prompts::getFilePath(this, QFileDialog::AcceptOpen);
-    this->openDatabase(filepath);
-    sessionManager->addRecentFile(filepath);
+    if (!filepath.isEmpty())
+        this->openConnection(ConnectionInfo::sqliteFile(filepath));
 }
 
 void MainWindow::appExit() const {
@@ -399,7 +449,7 @@ void MainWindow::scriptSchema() const {
 
 void MainWindow::setEnabledActions(const bool enabled) {
     ui->actionRefresh->setEnabled(enabled);
-    ui->actionShrink->setEnabled(enabled);
+    ui->actionShrink->setEnabled(enabled && this->database->canShrink());
     ui->menuExport_Data->setEnabled(enabled);
     ui->actionScript_CSV->setEnabled(enabled);
     ui->actionScript_SQL->setEnabled(enabled);

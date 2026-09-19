@@ -40,7 +40,13 @@ public:
 
     void resizeEvent(QResizeEvent *e) override;
 
-    void openDatabase(const QString &filename);
+    // Opens a Connection given as a SQLite path or a server URL. A server one
+    // without its password is handed to the connection dialog to complete.
+    void openDatabase(const QString &connection);
+
+    // Opens the Connection and shows its Schema. False, with the reason in the
+    // messages pane, when it could not be opened.
+    bool openConnection(const ConnectionInfo &connection);
 
     void restoreLastSession();
 
@@ -48,6 +54,8 @@ public slots:
     void createNewFile();
 
     void openExistingFile();
+
+    void connectToDatabase();
 
     [[noreturn]] void appExit() const;
 
@@ -113,6 +121,10 @@ private:
     void restoreWindowState();
 
     void showMessage(const QString &message) const;
+
+    // Asks for a Connection, starting from `initial`, until one opens or the
+    // user cancels.
+    void promptForConnection(const ConnectionInfo &initial);
 
     // Reports that an export is in progress and returns true when it is, so
     // callers can bail out with a single guard.
