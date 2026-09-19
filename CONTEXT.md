@@ -1,6 +1,6 @@
 # CONTEXT
 
-Domain vocabulary for the SQLite Query Analyzer codebase. Use these terms in
+Domain vocabulary for the SQL Query Analyzer codebase. Use these terms in
 discussions, code, and documentation. The aim is shared language so the
 architecture, the modules, and the tests all refer to the same things.
 

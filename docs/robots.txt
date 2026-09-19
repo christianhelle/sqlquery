@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://christianhelle.github.io/sqlitequery/sitemap.xml
+Sitemap: https://christianhelle.github.io/sqlquery/sitemap.xml

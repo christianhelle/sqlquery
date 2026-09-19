@@ -1,17 +1,17 @@
-[![Linux](https://github.com/christianhelle/sqlitequery/actions/workflows/linux.yml/badge.svg)](https://github.com/christianhelle/sqlitequery/actions/workflows/linux.yml)
-[![MacOS](https://github.com/christianhelle/sqlitequery/actions/workflows/macos.yml/badge.svg)](https://github.com/christianhelle/sqlitequery/actions/workflows/macos.yml)
-[![Windows](https://github.com/christianhelle/sqlitequery/actions/workflows/windows.yml/badge.svg)](https://github.com/christianhelle/sqlitequery/actions/workflows/windows.yml)
+[![Linux](https://github.com/christianhelle/sqlquery/actions/workflows/linux.yml/badge.svg)](https://github.com/christianhelle/sqlquery/actions/workflows/linux.yml)
+[![MacOS](https://github.com/christianhelle/sqlquery/actions/workflows/macos.yml/badge.svg)](https://github.com/christianhelle/sqlquery/actions/workflows/macos.yml)
+[![Windows](https://github.com/christianhelle/sqlquery/actions/workflows/windows.yml/badge.svg)](https://github.com/christianhelle/sqlquery/actions/workflows/windows.yml)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlitequery&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlitequery)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlitequery&metric=bugs)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlitequery)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlitequery&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlitequery)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlitequery&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlitequery)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlitequery&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlitequery)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlitequery&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlitequery)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlquery&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlquery)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlquery&metric=bugs)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlquery)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlquery&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlquery)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlquery&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlquery)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlquery&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlquery)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=christianhelle_sqlquery&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=christianhelle_sqlquery)
 
-# SQLite Query Analyzer
+# SQL Query Analyzer
 
-SQLite Query Analyzer is a lightweight and efficient desktop utility designed
+SQL Query Analyzer is a lightweight and efficient desktop utility designed
 to simplify the process of managing SQLite databases.
 
 It provides an intuitive interface for executing queries and direct table editing,
@@ -38,29 +38,29 @@ making database operations seamless and straightforward.
 
 #### Windows (PowerShell)
 ```pwsh
-Invoke-RestMethod https://christianhelle.com/sqlitequery/install.ps1 | Invoke-Expression
+Invoke-RestMethod https://christianhelle.com/sqlquery/install.ps1 | Invoke-Expression
 ```
 
 #### Linux / macOS (Bash)
 ```sh
-curl -fsSL https://christianhelle.com/sqlitequery/install.sh | bash
+curl -fsSL https://christianhelle.com/sqlquery/install.sh | bash
 ```
 
 ### Download Pre-built Binaries
 
-Pre-built binaries for all platforms are available on the [GitHub Releases](https://github.com/christianhelle/sqlitequery/releases/latest) page.
+Pre-built binaries for all platforms are available on the [GitHub Releases](https://github.com/christianhelle/sqlquery/releases/latest) page.
 
-For more detailed installation instructions, visit the [Documentation Website](https://christianhelle.github.io/sqlitequery/).
+For more detailed installation instructions, visit the [Documentation Website](https://christianhelle.github.io/sqlquery/).
 
 ## CLI Usage
 
-SQLite Query Analyzer can be used as a command line tool for automating database operations without the GUI. The application supports several command line options for exporting data, executing SQL scripts, and more.
+SQL Query Analyzer can be used as a command line tool for automating database operations without the GUI. The application supports several command line options for exporting data, executing SQL scripts, and more.
 
 ### Help Text
 
 ```sh
-$ sqlitequery --help
-Usage: sqlitequery [options] database
+$ sqlquery --help
+Usage: sqlquery [options] database
 A fast and lightweight cross-platform command line and GUI tool for querying and manipulating SQLite databases
 
 Options:
@@ -80,25 +80,25 @@ Arguments:
 
 #### Opening a database in GUI mode
 ```sh
-sqlitequery /path/to/database.db
+sqlquery /path/to/database.db
 ```
 
 #### Exporting data to CSV files
 ```sh
 # Export all tables to CSV files in the current directory
-sqlitequery --export-csv /path/to/database.db
+sqlquery --export-csv /path/to/database.db
 
 # Export with progress indicator
-sqlitequery --export-csv --progress /path/to/database.db
+sqlquery --export-csv --progress /path/to/database.db
 
 # Export to a specific directory
-sqlitequery --export-csv --target-directory /path/to/export/folder /path/to/database.db
+sqlquery --export-csv --target-directory /path/to/export/folder /path/to/database.db
 ```
 
 #### Executing SQL scripts
 ```sh
 # Execute a SQL script file against a database
-sqlitequery --run-sql /path/to/script.sql /path/to/database.db
+sqlquery --run-sql /path/to/script.sql /path/to/database.db
 ```
 
 ### CLI Features
@@ -110,7 +110,7 @@ sqlitequery --run-sql /path/to/script.sql /path/to/database.db
 
 ## Screenshots
 
-Here are some screenshots of SQLite Query Analyzer in action:
+Here are some screenshots of SQL Query Analyzer in action:
 
 ## Windows
 
@@ -151,8 +151,8 @@ Here are some screenshots of SQLite Query Analyzer in action:
 ### Clone the repository
 
 ```sh
-git clone https://github.com/christianhelle/sqlitequery.git
-cd sqlitequery
+git clone https://github.com/christianhelle/sqlquery.git
+cd sqlquery
 ```
 
 ### Build the project
@@ -192,7 +192,7 @@ Create installable packages (DEB, RPM, 7Z, ZIP, and compressed archives)
 make package
 ```
 
-Install a `sqlitequery` symlink to `~/.local/bin`
+Install a `sqlquery` symlink to `~/.local/bin`
 
 ```sh
 make install
@@ -229,7 +229,7 @@ Build the project (These instructions assumes that Qt root folder is C:\Qt)
 cd src
 cmake . -DCMAKE_PREFIX_PATH=C:/Qt/6.11.2/msvc2022_64 -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_FLAGS="/Zc:__cplusplus /permissive-" -B build
 cmake --build build --config Release
-C:\Qt\6.11.2\msvc2022_64\bin\windeployqt.exe .\build\Release\SQLiteQueryAnalyzer.exe
+C:\Qt\6.11.2\msvc2022_64\bin\windeployqt.exe .\build\Release\SQLQueryAnalyzer.exe
 ```
 
 Build the installer project using Inno Setup (Optional)
@@ -240,6 +240,6 @@ Build the installer project using Inno Setup (Optional)
 
 ## Contributing
 
-We welcome contributions to SQLite Query Analyzer!
+We welcome contributions to SQL Query Analyzer!
 If you have any ideas, suggestions, or bug reports,
 please open an issue or submit a pull request on GitHub.

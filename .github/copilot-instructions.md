@@ -1,6 +1,6 @@
-# SQLite Query Analyzer
+# SQL Query Analyzer
 
-SQLite Query Analyzer is a cross-platform Qt6-based C++ desktop application that provides both GUI and CLI interfaces for managing SQLite databases. It supports Linux, Windows, and macOS platforms.
+SQL Query Analyzer is a cross-platform Qt6-based C++ desktop application that provides both GUI and CLI interfaces for managing SQLite databases. It supports Linux, Windows, and macOS platforms.
 
 Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
 
@@ -18,11 +18,11 @@ Always reference these instructions first and fallback to search or bash command
 - **Windows**: `pwsh build.ps1` -- similar timing. NEVER CANCEL. Set timeout to 60+ seconds.
 
 ### Run the application:
-- **CLI Help**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLiteQueryAnalyzer --help`
-- **CLI Version**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLiteQueryAnalyzer --version`
-- **Export CSV**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLiteQueryAnalyzer --export-csv database.sqlite`
-- **Execute SQL Script**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLiteQueryAnalyzer --run-sql script.sql database.sqlite`
-- **GUI Mode**: Requires X11 display - use `./linux/bin/SQLiteQueryAnalyzer database.sqlite` in environments with GUI support
+- **CLI Help**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLQueryAnalyzer --help`
+- **CLI Version**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLQueryAnalyzer --version`
+- **Export CSV**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLQueryAnalyzer --export-csv database.sqlite`
+- **Execute SQL Script**: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLQueryAnalyzer --run-sql script.sql database.sqlite`
+- **GUI Mode**: Requires X11 display - use `./linux/bin/SQLQueryAnalyzer database.sqlite` in environments with GUI support
 
 ### Package the application:
 - **7Z Archive**: `cpack -G 7Z --config ./build/CPackConfig.cmake` -- takes 1 second. NEVER CANCEL. Set timeout to 30+ seconds.
@@ -52,9 +52,9 @@ Always reference these instructions first and fallback to search or bash command
 
 ### Always manually validate CLI functionality:
 - Create test database: `sqlite3 /tmp/testdb.sqlite "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT); INSERT INTO users (name, email) VALUES ('Test User', 'test@example.com');"`
-- Test CSV export: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLiteQueryAnalyzer --export-csv /tmp/testdb.sqlite`
+- Test CSV export: `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLQueryAnalyzer --export-csv /tmp/testdb.sqlite`
 - Verify export: `ls -la *.csv && head *.csv`
-- Test SQL execution: Create SQL file with `echo "SELECT COUNT(*) FROM users;" > /tmp/test.sql` then run `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLiteQueryAnalyzer --run-sql /tmp/test.sql /tmp/testdb.sqlite`
+- Test SQL execution: Create SQL file with `echo "SELECT COUNT(*) FROM users;" > /tmp/test.sql` then run `QT_QPA_PLATFORM=offscreen ./linux/bin/SQLQueryAnalyzer --run-sql /tmp/test.sql /tmp/testdb.sqlite`
 
 ### Code formatting validation:
 - Always run `clang-format --dry-run --Werror src/**/*.cpp src/**/*.h` to check formatting issues before committing
@@ -104,19 +104,19 @@ Always reference these instructions first and fallback to search or bash command
 ### CLI Usage Examples:
 ```bash
 # Show help
-QT_QPA_PLATFORM=offscreen ./SQLiteQueryAnalyzer --help
+QT_QPA_PLATFORM=offscreen ./SQLQueryAnalyzer --help
 
 # Export all tables to CSV in current directory
-QT_QPA_PLATFORM=offscreen ./SQLiteQueryAnalyzer --export-csv database.db
+QT_QPA_PLATFORM=offscreen ./SQLQueryAnalyzer --export-csv database.db
 
 # Export with progress indicator  
-QT_QPA_PLATFORM=offscreen ./SQLiteQueryAnalyzer --export-csv --progress database.db
+QT_QPA_PLATFORM=offscreen ./SQLQueryAnalyzer --export-csv --progress database.db
 
 # Execute SQL script
-QT_QPA_PLATFORM=offscreen ./SQLiteQueryAnalyzer --run-sql queries.sql database.db
+QT_QPA_PLATFORM=offscreen ./SQLQueryAnalyzer --run-sql queries.sql database.db
 
 # Open GUI (requires display)
-./SQLiteQueryAnalyzer database.db
+./SQLQueryAnalyzer database.db
 ```
 
 ### Build timing expectations:
