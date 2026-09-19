@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
     // Scopes QSettings, which would otherwise land in a shared default.
-    QApplication::setOrganizationName("SQLiteQueryAnalyzerTests");
-    QApplication::setApplicationName("SQLiteQueryAnalyzerTests");
+    QApplication::setOrganizationName("SQLQueryAnalyzerTests");
+    QApplication::setApplicationName("SQLQueryAnalyzerTests");
 
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

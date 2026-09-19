@@ -31,7 +31,7 @@ MainWindow::MainWindow(IDatabase *database, QWidget *parent) :
     this->treeZoom = std::make_unique<ZoomPresenter>(this);
     this->treeZoom->addTarget(ui->treeWidget);
 
-    this->setWindowTitle("SQLite Query Analyzer");
+    this->setWindowTitle("SQL Query Analyzer");
     this->connectSignalSlots();
 
     this->analyzer = std::make_unique<DbAnalyzer>(database);
@@ -303,7 +303,7 @@ void MainWindow::openDatabase(const QString &filename) {
     ui->tabWidget->setCurrentIndex(0);
     ui->textEdit->clear();
 
-    this->setWindowTitle("SQLite Query Analyzer - " + filename);
+    this->setWindowTitle("SQL Query Analyzer - " + filename);
 }
 
 void MainWindow::openExistingFile() {
@@ -491,7 +491,7 @@ void MainWindow::treeNodeChanged(QTreeWidgetItem *item,
 }
 
 void MainWindow::about() {
-    const QString text = "SQLite Query Analyzer\n"
+    const QString text = "SQL Query Analyzer\n"
                          "Version: " + QApplication::applicationVersion() + "\n"
                          "Copyright (c) Christian Resma Helle 2015\n"
                          "All rights reserved.\n\n"

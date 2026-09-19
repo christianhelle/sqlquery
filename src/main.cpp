@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationVersion(Version);
     QApplication::setOrganizationDomain("christianhelle.com");
     QApplication::setOrganizationName("Christian Helle");
-    QApplication::setApplicationName("SQLite Query Analyzer");
+    QApplication::setApplicationName("SQL Query Analyzer");
 
     QCommandLineParser parser;
     parser.setApplicationDescription(
