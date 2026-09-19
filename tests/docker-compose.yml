@@ -1,0 +1,33 @@
+# Servers for the provider integration tests (tests/test_providers.cpp).
+#
+#   docker compose -f tests/docker-compose.yml up -d
+#   export SQLQUERY_TEST_PG='postgres://postgres:SqlQuery_2026@localhost:5432/postgres'
+#   export SQLQUERY_TEST_MYSQL='mysql://root:SqlQuery_2026@localhost:3306/test'
+#   export SQLQUERY_TEST_MSSQL='mssql://sa:SqlQuery_2026@localhost:1433/master?trust=1'
+#   ./build/tests/SQLQueryTests --gtest_filter='Servers/*'
+#
+# SQL Server additionally needs unixODBC and the Microsoft ODBC Driver 18 on
+# the machine running the tests.
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: SqlQuery_2026
+    ports:
+      - "5432:5432"
+
+  mariadb:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: SqlQuery_2026
+      MARIADB_DATABASE: test
+    ports:
+      - "3306:3306"
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: SqlQuery_2026
+    ports:
+      - "1433:1433"
