@@ -115,3 +115,74 @@ TEST(SqlServerDialectTest, ConnectionStringUsesIntegratedAuth) {
     EXPECT_EQ(SqlServerDialect::connectionString(info),
               "DRIVER={ODBC Driver 18 for SQL Server};SERVER={sql1,14330};Trusted_Connection=yes;");
 }
+
+namespace {
+    // Batches with the whitespace around them dropped, as the executor trims
+    // each piece before running it.
+    QStringList batches(const SqlDialect &dialect, const QString &script) {
+        QStringList trimmed;
+        for (const auto &piece : dialect.splitScript(script))
+            trimmed << piece.trimmed();
+        return trimmed;
+    }
+}
+
+TEST(SplitScriptTest, DefaultSplitsOnSemicolons) {
+    EXPECT_EQ(batches(postgres(), "SELECT 1; SELECT 2;"), QStringList({"SELECT 1", "SELECT 2"}));
+}
+
+TEST(SplitScriptTest, SqlServerWithoutGoSplitsOnSemicolons) {
+    EXPECT_EQ(batches(sqlServer(), "SELECT 1; SELECT 2"), QStringList({"SELECT 1", "SELECT 2"}));
+}
+
+TEST(SplitScriptTest, SqlServerSplitsOnGoLines) {
+    EXPECT_EQ(batches(sqlServer(), "SELECT 1\nGO\nSELECT 2\ngo\n"), QStringList({"SELECT 1", "SELECT 2"}));
+}
+
+// The reason GO exists: a procedure body holds semicolons and must reach the
+// server whole.
+TEST(SplitScriptTest, SqlServerKeepsABatchWhole) {
+    const QString procedure = "CREATE PROCEDURE p AS\nBEGIN\n  SELECT 1;\n  SELECT 2;\nEND";
+    EXPECT_EQ(batches(sqlServer(), "DROP PROCEDURE IF EXISTS p;\nGO\n" + procedure + "\nGO"),
+              QStringList({"DROP PROCEDURE IF EXISTS p;", procedure}));
+}
+
+TEST(SplitScriptTest, SqlServerAllowsWhitespaceAndACommentAroundGo) {
+    EXPECT_EQ(batches(sqlServer(), "SELECT 1\n  GO   -- end of first\r\nSELECT 2"),
+              QStringList({"SELECT 1", "SELECT 2"}));
+}
+
+TEST(SplitScriptTest, SqlServerRepeatsABatchForGoWithACount) {
+    EXPECT_EQ(batches(sqlServer(), "INSERT INTO t DEFAULT VALUES\nGO 3"),
+              QStringList({"INSERT INTO t DEFAULT VALUES", "INSERT INTO t DEFAULT VALUES",
+                           "INSERT INTO t DEFAULT VALUES"}));
+}
+
+TEST(SplitScriptTest, SqlServerSkipsEmptyBatches) {
+    EXPECT_EQ(batches(sqlServer(), "GO\nSELECT 1\nGO\n\nGO\n"), QStringList({"SELECT 1"}));
+}
+
+TEST(SplitScriptTest, SqlServerDoesNotSplitOnGoInsideAWord) {
+    EXPECT_EQ(batches(sqlServer(), "SELECT 1 AS GOAL\nGO\nSELECT 'GO'"),
+              QStringList({"SELECT 1 AS GOAL", "SELECT 'GO'"}));
+}
+
+TEST(SplitScriptTest, SqlServerIgnoresGoInsideABlockComment) {
+    const QString first = "SELECT 1\n/*\nGO\n*/\nSELECT 2";
+    EXPECT_EQ(batches(sqlServer(), first + "\nGO\nSELECT 3"), QStringList({first, "SELECT 3"}));
+}
+
+TEST(SplitScriptTest, SqlServerIgnoresGoInsideAMultiLineString) {
+    const QString first = "INSERT INTO t VALUES ('line one\nGO\nit''s line three')";
+    EXPECT_EQ(batches(sqlServer(), first + "\nGO\nSELECT 3"), QStringList({first, "SELECT 3"}));
+}
+
+TEST(SplitScriptTest, SqlServerQuoteInALineCommentDoesNotOpenAString) {
+    EXPECT_EQ(batches(sqlServer(), "SELECT 1 -- it's\nGO\nSELECT 2"),
+              QStringList({"SELECT 1 -- it's", "SELECT 2"}));
+}
+
+TEST(SplitScriptTest, SqlServerQuoteInABracketedNameDoesNotOpenAString) {
+    EXPECT_EQ(batches(sqlServer(), "SELECT 1 AS [it's]\nGO\nSELECT 2"),
+              QStringList({"SELECT 1 AS [it's]", "SELECT 2"}));
+}
