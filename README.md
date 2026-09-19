@@ -75,8 +75,12 @@ with `--password`, the `SQLQUERY_PASSWORD` environment variable, or inside the U
 
 ### Known limitations
 
-- Scripts are split into statements on `;`. SQL Server `GO` batches and PostgreSQL
-  `$$` function bodies are not understood yet.
+- Scripts are split into statements on `;`, so PostgreSQL `$$` function bodies and a
+  `;` inside a string literal are not understood yet.
+- A SQL Server script that uses `GO` runs one batch at a time, like `sqlcmd`: a line
+  holding only `GO` ends a batch, and `GO 5` runs it five times. A batch goes to the
+  server whole, so a procedure body keeps its semicolons, but a batch holding several
+  `SELECT`s shows only the first result. A script without `GO` is split on `;`.
 - The table data grid for PostgreSQL and SQL Server reads the whole result set on
   the client, so paging only happens in the view.
 - Views, stored procedures and other databases on the same server are not listed
