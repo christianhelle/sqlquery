@@ -90,18 +90,19 @@ void MainWindow::deleteSelectedTable() {
         return;
 
     const auto item = ui->treeWidget->itemFromIndex(indexes.at(0));
-    if (item->parent() == nullptr || item->parent()->text(0) != "Tables")
+    if (item->type() != DbTree::TableItemType)
         return;
 
-    const auto tableName = item->text(0);
-    if (!Prompts::confirmDelete(this, tableName)) {
+    const auto tableName = item->data(0, DbTree::TableNameRole).toString();
+    const auto schema = item->data(0, DbTree::SchemaRole).toString();
+    if (!Prompts::confirmDelete(this, item->text(0))) {
         return;
     }
 
     QElapsedTimer time;
     time.start();
 
-    const QueryResult result = this->executor->dropTable(tableName);
+    const QueryResult result = this->executor->dropTable(tableName, schema);
     const auto milliseconds = static_cast<double>(time.elapsed());
     const auto msg = "Query execution took " + QString::number(milliseconds / 1000) + " seconds";
     this->showMessage(msg);
@@ -470,13 +471,11 @@ void MainWindow::treeNodeChanged(QTreeWidgetItem *item,
         ui->queryResultTab->setCurrentIndex(1);
         return;
     }
-    if (item && item
-        ->
-        type() == QTreeWidgetItem::UserType + 1
-    ) {
-        const QString tableName = item->text(column);
+    if (item && item->type() == DbTree::TableItemType) {
+        const QString tableName = item->data(column, DbTree::TableNameRole).toString();
+        const QString schema = item->data(column, DbTree::SchemaRole).toString();
         QString error;
-        auto *model = this->executor->previewTablePaged(tableName, &error);
+        auto *model = this->executor->previewTablePaged(tableName, &error, schema);
 
         if (model == nullptr) {
             this->showMessage(error.isEmpty() ? "Unable to read " + tableName : error);

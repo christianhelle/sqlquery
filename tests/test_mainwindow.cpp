@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+
+#include "database/dbtree.h"
 #include <QStandardPaths>
 #include <QAction>
 #include <QFontInfo>
@@ -102,6 +104,21 @@ TEST_F(MainWindowTest, RefreshingShowsTheTablesOfTheInjectedDatabase) {
     window.refreshDatabase();
 
     EXPECT_TRUE(tableNames(window).contains("inserted_at"));
+}
+
+// The preview and drop handlers build SQL from the node's roles, not from its
+// text, which reads `schema.table` on a server.
+TEST_F(MainWindowTest, TableNodesCarryTheirSchemaAndBareName) {
+    MainWindow window(db.get());
+    window.refreshDatabase();
+
+    const auto *tree = window.findChild<QTreeWidget *>();
+    ASSERT_NE(tree, nullptr);
+    const auto items = tree->findItems("inserted_at", Qt::MatchExactly | Qt::MatchRecursive);
+    ASSERT_EQ(items.size(), 1);
+    EXPECT_EQ(items.first()->type(), DbTree::TableItemType);
+    EXPECT_EQ(items.first()->data(0, DbTree::TableNameRole).toString(), "inserted_at");
+    EXPECT_TRUE(items.first()->data(0, DbTree::SchemaRole).toString().isEmpty());
 }
 
 // The whole chain: a select naming a DDL word used to re-analyse the database

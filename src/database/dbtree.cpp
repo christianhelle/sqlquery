@@ -50,8 +50,10 @@ void DbTree::populateTree(const DatabaseInfo &info) {
     this->tree->addTopLevelItem(tablesRootNode.release());
 
     for (const auto &table : info.tables) {
-        auto tableNode = std::make_unique<QTreeWidgetItem>(QTreeWidgetItem::UserType + 1);
-        tableNode->setText(0, table.name);
+        auto tableNode = std::make_unique<QTreeWidgetItem>(TableItemType);
+        tableNode->setText(0, table.schema.isEmpty() ? table.name : table.schema + "." + table.name);
+        tableNode->setData(0, SchemaRole, table.schema);
+        tableNode->setData(0, TableNameRole, table.name);
         const auto tableNodePtr = tableNode.get();
         tablesRootNodePtr->addChild(tableNode.release());
 
