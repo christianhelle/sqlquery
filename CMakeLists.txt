@@ -136,6 +136,10 @@ set(CPACK_VERBATIM_VARIABLES ON)
 set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/sqlquery")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christian Resma Helle <christian.helle@outlook.com>")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS libxcb-xinerama0)
+# Client libraries for the server Providers. Recommended rather than required,
+# so a SQLite-only install does not pull them in.
+set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "libpq5, libmariadb3 | libmysqlclient21, libodbc2 | unixodbc")
+set(CPACK_RPM_PACKAGE_SUGGESTS "libpq, mariadb-connector-c, unixODBC")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/dist/postinst;${CMAKE_CURRENT_SOURCE_DIR}/dist/prerm")
 include(CPack)
 
