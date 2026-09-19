@@ -62,7 +62,7 @@ jobs:
           curl -sSL -o packages-microsoft-prod.deb "https://packages.microsoft.com/config/ubuntu/${VERSION_ID}/packages-microsoft-prod.deb"
           sudo dpkg -i packages-microsoft-prod.deb
           sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y libpq5 libmysqlclient21 libmariadb3 unixodbc msodbcsql18
+          sudo ACCEPT_EULA=Y apt-get install -y libpq5 libmysqlclient21 libmariadb3 unixodbc msodbcsql18 mssql-tools18
 
       - name: List Qt SQL drivers
         run: |
@@ -78,13 +78,15 @@ jobs:
 
       - name: Wait for SQL Server
         run: |
-          for i in $(seq 1 60); do
-            if /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P SqlQuery_2026 -C -Q "SELECT 1" > /dev/null 2>&1; then
+          for i in $(seq 1 90); do
+            if /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P SqlQuery_2026 -C -Q "SELECT 1"; then
               echo "SQL Server is up"; exit 0
             fi
             sleep 2
           done
-          echo "SQL Server did not come up"; exit 1
+          echo "SQL Server did not come up"
+          docker logs "$(docker ps -q --filter ancestor=mcr.microsoft.com/mssql/server:2022-latest)" 2>&1 | tail -40
+          exit 1
 
       - name: Test
         env:
