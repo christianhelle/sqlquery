@@ -83,7 +83,7 @@ jobs:
       - name: Zip build
         working-directory: ${{ runner.temp }}
         run: |
-          7z a SQLQueryAnalyzer_Windows.zip ${{ github.workspace }}\build\Release\SQLQueryAnalyzer.exe -r
+          7z a SQLQueryAnalyzer_Windows.zip ${{ github.workspace }}\build\Release\*
 
       - name: Publish Build
         uses: actions/upload-artifact@master
