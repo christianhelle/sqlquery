@@ -133,3 +133,40 @@ TEST_F(DbSchemaExportTest, ScriptsIdentifiersThatNeedDelimiting) {
     EXPECT_TRUE(script.contains(R"(CREATE TABLE "we""ird" ()"));
     EXPECT_TRUE(script.contains(R"("order" INTEGER)"));
 }
+
+namespace {
+    DatabaseInfo serverInfo(const Provider provider, const QString &schema) {
+        Column id;
+        id.ordinal = 1;
+        id.name = "id";
+        id.dataType = "int";
+        id.notNull = true;
+        id.primaryKey = true;
+
+        Table table;
+        table.schema = schema;
+        table.name = "orders";
+        table.columns << id;
+
+        DatabaseInfo info;
+        info.provider = provider;
+        info.tables << table;
+        return info;
+    }
+}
+
+TEST(DbSchemaExportDialectTest, QualifiesAPostgresTableWithItsSchema) {
+    const DbSchemaExport exporter(serverInfo(Provider::PostgreSql, "sales"));
+    EXPECT_TRUE(exporter.exportSchema().contains(R"(CREATE TABLE "sales"."orders" ()"));
+}
+
+TEST(DbSchemaExportDialectTest, DelimitsSqlServerNamesWithBrackets) {
+    const auto sql = DbSchemaExport(serverInfo(Provider::SqlServer, "dbo")).exportSchema();
+    EXPECT_TRUE(sql.contains("CREATE TABLE [dbo].[orders] ("));
+    EXPECT_TRUE(sql.contains("[id] int PRIMARY KEY NOT NULL"));
+}
+
+TEST(DbSchemaExportDialectTest, DelimitsMySqlNamesWithBackticks) {
+    const auto sql = DbSchemaExport(serverInfo(Provider::MySql, "")).exportSchema();
+    EXPECT_TRUE(sql.contains("CREATE TABLE `orders` ("));
+}
