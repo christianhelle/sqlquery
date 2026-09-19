@@ -26,6 +26,7 @@ FetchContent_MakeAvailable(googletest)
 # Test sources
 set(TEST_SRCS
     test_queryexecutor.cpp
+    test_connectioninfo.cpp
     test_sqlidentifier.cpp
     test_dbanalyzer.cpp
     test_dbexportdata.cpp
