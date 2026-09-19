@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <QDir>
 #include <QFile>
 #include <QTemporaryDir>
 
@@ -35,7 +36,7 @@ TEST_F(RecentConnectionsTest, KeepsAnExistingFile) {
 
     RecentConnections::add(path);
 
-    EXPECT_TRUE(RecentConnections::getList().contains(path));
+    EXPECT_TRUE(RecentConnections::getList().contains(QDir::toNativeSeparators(path)));
 }
 
 TEST_F(RecentConnectionsTest, SkipsAFileThatDoesNotExist) {
