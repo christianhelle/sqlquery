@@ -253,6 +253,50 @@ TEST_F(DbDataExportTest, DelimitsColumnNamesInTheInsertColumnList) {
     EXPECT_TRUE(content.contains(R"("order")"));
 }
 
+// A double-quoted value is an Identifier to PostgreSQL and SQL Server, so text
+// is written as a single-quoted literal with any quote in it doubled.
+TEST_F(DbDataExportTest, WritesTextAsSingleQuotedLiterals) {
+    runSql({"CREATE TABLE notes (id INTEGER PRIMARY KEY, body TEXT)",
+            "INSERT INTO notes (body) VALUES ('it''s')"});
+
+    const QString content = exportedSqlScript(reanalyze());
+
+    EXPECT_TRUE(content.contains("VALUES (1, 'it''s');"));
+}
+
+TEST_F(DbDataExportTest, WritesNullAsNull) {
+    runSql({"CREATE TABLE maybe (id INTEGER PRIMARY KEY, body TEXT, n INTEGER)",
+            "INSERT INTO maybe (body, n) VALUES (NULL, NULL)"});
+
+    const QString content = exportedSqlScript(reanalyze());
+
+    EXPECT_TRUE(content.contains("VALUES (1, NULL, NULL);"));
+}
+
+// What the export is for: the script replays into an empty copy of the Schema.
+TEST_F(DbDataExportTest, ExportedScriptReplaysIntoAFreshDatabase) {
+    runSql({"CREATE TABLE mixed (id INTEGER PRIMARY KEY, body TEXT, price REAL, n INTEGER)",
+            R"(INSERT INTO mixed (body, price, n) VALUES ('a ''quoted'' "word"', 1.5, NULL))"});
+    const QString script = exportedSqlScript(reanalyze());
+
+    QTemporaryDir replayDir;
+    ProviderDatabase replay;
+    replay.setConnection(ConnectionInfo::sqliteFile(replayDir.path() + "/replay.db"));
+    ASSERT_TRUE(replay.open());
+    QueryExecutor replayExecutor(&replay);
+    replayExecutor.runStatements({"CREATE TABLE mixed (id INTEGER PRIMARY KEY, body TEXT, price REAL, n INTEGER)"});
+
+    QStringList errors;
+    replayExecutor.runScript(script, &errors);
+
+    const QueryResult rows = replayExecutor.previewTable("mixed");
+    ASSERT_TRUE(rows.ok);
+    ASSERT_EQ(rows.rows.size(), 1);
+    EXPECT_EQ(rows.rows.first().values.at(1).toString(), R"(a 'quoted' "word")");
+    EXPECT_DOUBLE_EQ(rows.rows.first().values.at(2).toDouble(), 1.5);
+    EXPECT_TRUE(rows.rows.first().values.at(3).isNull());
+}
+
 // A CSV header is not SQL. The Column names go in as the user wrote them, so
 // delimiting the INSERT column list must not follow them here.
 TEST_F(DbDataExportTest, CsvHeaderKeepsColumnNamesUndelimited) {
