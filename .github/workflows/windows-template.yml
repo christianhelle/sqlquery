@@ -100,7 +100,8 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: SQLiteQuerAnalyzer_Windows_Installer_v${{ inputs.version }}
-          path: ${{ github.workspace }}\artifacts\SQLQueryAnalyzer-Setup.exe
+          path: ${{ github.workspace }}\dist\artifacts\SQLQueryAnalyzer-Setup.exe
+          if-no-files-found: error
 
       - name: Build Chocolatey Package
         working-directory: ${{ github.workspace }}\dist\chocolatey
