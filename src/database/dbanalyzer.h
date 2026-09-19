@@ -18,6 +18,9 @@ public:
 
     void loadColumns(DatabaseInfo &info) const;
 
+    // The engine version, and for a server the size it reports.
+    void loadServerInfo(DatabaseInfo &info) const;
+
 private:
     IDatabase *database;
 };
