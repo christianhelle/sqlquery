@@ -32,17 +32,24 @@ void DbTree::populateTree(const DatabaseInfo &info) {
     const auto dbInfoNodePtr = dbInfoNode.get();
     this->tree->addTopLevelItem(dbInfoNode.release());
 
-    auto filenameNode = std::make_unique<QTreeWidgetItem>();
-    filenameNode->setText(0, QString("File name: ").append(info.filename));
-    dbInfoNodePtr->addChild(filenameNode.release());
+    const auto addInfo = [dbInfoNodePtr](const QString &text) {
+        auto node = std::make_unique<QTreeWidgetItem>();
+        node->setText(0, text);
+        dbInfoNodePtr->addChild(node.release());
+    };
 
-    auto creationDateNode = std::make_unique<QTreeWidgetItem>();
-    creationDateNode->setText(0, QString("Created on: ").append(info.creationDate.toLocalTime().toString()));
-    dbInfoNodePtr->addChild(creationDateNode.release());
-
-    auto sizeNode = std::make_unique<QTreeWidgetItem>();
-    sizeNode->setText(0, QString("File size: ").append(getFileSize(info.size)));
-    dbInfoNodePtr->addChild(sizeNode.release());
+    if (info.provider == Provider::Sqlite) {
+        addInfo(QString("File name: ").append(info.filename));
+        addInfo(QString("Created on: ").append(info.creationDate.toLocalTime().toString()));
+        addInfo(QString("File size: ").append(getFileSize(info.size)));
+    } else {
+        addInfo(QString("Provider: ").append(providerName(info.provider)));
+        addInfo(QString("Server: ").append(info.server));
+        addInfo(QString("Database: ").append(info.databaseName));
+        addInfo(QString("Size: ").append(getFileSize(info.size)));
+    }
+    if (!info.databaseVersion.isEmpty())
+        addInfo(QString("Version: ").append(info.databaseVersion.section('\n', 0, 0).trimmed()));
 
     auto tablesRootNode = std::make_unique<QTreeWidgetItem>();
     tablesRootNode->setText(0, "Tables");
