@@ -16,7 +16,10 @@ Highlighter::Highlighter(QTextDocument *parent)
             << "\\bleft\\b" << "\\inner\\b" << "\\bjoin\\b" << "\\bright\\b"
             << "\\bouter\\b" << "\\bunion\\b" << "\\ball\\b" << "\\bhaving\\b"
             << "\\border\\b" << "\\bby\\b" << "\\basc\\b" << "\\bdesc\\b"
-            << "\\bhaving\\b" << "\\bin\\b" << "\\bcreate\\b" << "\\bdrop\\b" << "\\btable\\b";
+            << "\\bhaving\\b" << "\\bin\\b" << "\\bcreate\\b" << "\\bdrop\\b" << "\\btable\\b"
+            // Keywords the server Providers add.
+            << "\\btop\\b" << "\\boffset\\b" << "\\bfetch\\b" << "\\breturning\\b"
+            << "\\bilike\\b" << "\\bschema\\b" << "\\bgo\\b";
 
     foreach(const QString &pattern, keywordPatterns) {
         rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
