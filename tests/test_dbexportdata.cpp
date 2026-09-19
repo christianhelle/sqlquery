@@ -213,8 +213,8 @@ TEST_F(DbDataExportTest, ExportWithSpecialCharacters) {
     QString content = QTextStream(&file).readAll();
     file.close();
 
-    // Quotes should be escaped
-    EXPECT_TRUE(content.contains("\"\"\""));
+    // A double quote needs no escaping inside a single-quoted literal
+    EXPECT_TRUE(content.contains(R"('He said "hello"')"));
 }
 
 TEST_F(DbDataExportTest, ExportRowsCounted) {

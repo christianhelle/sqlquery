@@ -37,8 +37,15 @@ private:
 
     [[nodiscard]] QList<bool> getTextColumnFlags(const Table &table) const;
 
+    // One CSV row: text columns in double quotes, the rest as they read.
     static QStringList getColumnValueDefs(const QList<bool> &isTextColumn,
                                           const QList<QVariant> &values);
+
+    // The VALUES of one INSERT: NULL as NULL, numbers bare, everything else a
+    // string literal in the Provider's own form. A double-quoted value is an
+    // Identifier to PostgreSQL and SQL Server, so it cannot stand in for one.
+    [[nodiscard]] QStringList sqlValues(const QList<bool> &isTextColumn,
+                                        const QList<QVariant> &values) const;
 };
 
 #endif // DBDATAEXPORT_H

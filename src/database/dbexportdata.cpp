@@ -54,6 +54,42 @@ QStringList DbDataExport::getColumnValueDefs(const QList<bool> &isTextColumn,
     return valueDefinitions;
 }
 
+namespace {
+    bool isNumber(const QVariant &value) {
+        switch (value.typeId()) {
+            case QMetaType::Int:
+            case QMetaType::UInt:
+            case QMetaType::LongLong:
+            case QMetaType::ULongLong:
+            case QMetaType::Double:
+            case QMetaType::Float:
+            case QMetaType::Short:
+            case QMetaType::UShort:
+                return true;
+            default:
+                return false;
+        }
+    }
+}
+
+QStringList DbDataExport::sqlValues(const QList<bool> &isTextColumn,
+                                    const QList<QVariant> &values) const {
+    QStringList valueDefinitions;
+    valueDefinitions.reserve(values.size());
+    for (int i = 0; i < values.size(); ++i) {
+        const QVariant &value = values.at(i);
+        const bool isText = i < isTextColumn.size() && isTextColumn.at(i);
+        if (value.isNull()) {
+            valueDefinitions.append(QStringLiteral("NULL"));
+        } else if (!isText && (isNumber(value) || value.typeId() == QMetaType::Bool)) {
+            valueDefinitions.append(value.toString());
+        } else {
+            valueDefinitions.append(dialect().quoteLiteral(value.toString()));
+        }
+    }
+    return valueDefinitions;
+}
+
 void DbDataExport::exportDataToSqlFile(IDatabase *database,
                                        const QString &filename,
                                        const CancellationToken *cancellationToken,
@@ -80,7 +116,7 @@ void DbDataExport::exportDataToSqlFile(IDatabase *database,
             [&](const QList<QVariant> &values) {
                 if (cancellationToken->isCancellationRequested())
                     return false;
-                const auto valueList = getColumnValueDefs(isTextColumn, values).join(", ");
+                const auto valueList = sqlValues(isTextColumn, values).join(", ");
                 out << "INSERT INTO " << tableName << "(" << columns << ") ";
                 out << "VALUES (" << valueList << ");\n";
                 progress->increment();
