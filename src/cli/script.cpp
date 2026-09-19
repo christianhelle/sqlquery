@@ -8,7 +8,7 @@
 #include "../database/queryexecutor.h"
 
 void Script::executeSqlFile(const QString &sqlFilePath,
-                            const QString &dbFilePath) {
+                            const ConnectionInfo &connection) {
     const auto sqlFile = std::make_unique<QFile>(sqlFilePath);
     if (!sqlFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
@@ -19,9 +19,9 @@ void Script::executeSqlFile(const QString &sqlFilePath,
     const QString sqlScript = QTextStream(sqlFile.get()).readAll();
 
     const auto database = std::make_unique<ProviderDatabase>();
-    database->setConnection(ConnectionInfo::sqliteFile(dbFilePath));
+    database->setConnection(connection);
     if (!database->open()) {
-        qWarning("Unable to open database file");
+        qWarning().noquote() << "Unable to open" << connection.displayName() << "-" << database->lastError();
         return;
     }
 

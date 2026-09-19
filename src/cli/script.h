@@ -3,11 +3,13 @@
 
 #include <QString>
 
+#include "../database/connectioninfo.h"
+
 
 class Script {
 public:
     static void executeSqlFile(const QString &sqlFilePath,
-                               const QString &dbFilePath);
+                               const ConnectionInfo &connection);
 };
 
 #endif //RUN_H

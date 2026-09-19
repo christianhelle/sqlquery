@@ -2,7 +2,7 @@
 #include "../database/providerdatabase.h"
 #include "../database/dbanalyzer.h"
 
-void Export::exportDataToCsvFile(const QString &file,
+void Export::exportDataToCsvFile(const ConnectionInfo &connection,
                                  const QString &outputFolder,
                                  const bool showProgress) {
     const auto dataExportProgress = std::make_unique<ExportDataProgress>();
@@ -17,9 +17,9 @@ void Export::exportDataToCsvFile(const QString &file,
     const auto cancellationToken = tcs->get();
 
     const auto database = std::make_unique<ProviderDatabase>();
-    database->setConnection(ConnectionInfo::sqliteFile(file));
+    database->setConnection(connection);
     if (!database->open()) {
-        qWarning("Unable to open file");
+        qWarning().noquote() << "Unable to open" << connection.displayName() << "-" << database->lastError();
         return;
     }
 
