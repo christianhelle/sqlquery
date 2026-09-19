@@ -4,13 +4,15 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
-#include "sqlidentifier.h"
+#include "sqldialect.h"
 
 #include <utility>
 
-PagedResultModel::PagedResultModel(const QSqlDatabase &database, QString sql, QObject *parent)
+PagedResultModel::PagedResultModel(const QSqlDatabase &database, const SqlDialect &dialect, QString sql,
+                                   QObject *parent)
     : QSqlQueryModel(parent),
       database(database),
+      dialect(dialect),
       statement(std::move(sql)) {
     run(statement);
 }
@@ -41,9 +43,11 @@ void PagedResultModel::sort(const int column, const Qt::SortOrder order) {
     if (columnName.isEmpty())
         return;
 
-    const QString sorted = QString("SELECT * FROM (%1) ORDER BY %2 %3")
+    // The alias is required by PostgreSQL, MySQL and SQL Server, and harmless
+    // to SQLite.
+    const QString sorted = QString("SELECT * FROM (%1) AS sorted_result ORDER BY %2 %3")
             .arg(statement,
-                 quotedIdentifier(columnName),
+                 dialect.quoteIdentifier(columnName),
                  order == Qt::AscendingOrder ? "ASC" : "DESC");
 
     // Not every statement can be wrapped in a subquery. run() leaves the model

@@ -76,7 +76,7 @@ QAbstractItemModel *SqlDatabaseAdapter::createResultModel(const QString &sql, QS
         return nullptr;
     }
 
-    auto model = std::make_unique<PagedResultModel>(database, sql);
+    auto model = std::make_unique<PagedResultModel>(database, *sqlDialect, sql);
     if (!model->errorText().isEmpty()) {
         if (error != nullptr)
             *error = model->errorText();

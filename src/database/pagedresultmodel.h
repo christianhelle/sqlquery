@@ -5,6 +5,8 @@
 #include <QSqlQueryModel>
 #include <QString>
 
+class SqlDialect;
+
 // A lazily fetched view over a Query's result set. Rows are read in pages as
 // they are scrolled into view, so a result set of any size can be browsed
 // without holding it in memory. Sorting re-runs the statement with an ORDER BY
@@ -13,7 +15,8 @@ class PagedResultModel final : public QSqlQueryModel {
     Q_OBJECT
 
 public:
-    PagedResultModel(const QSqlDatabase &database, QString sql, QObject *parent = nullptr);
+    PagedResultModel(const QSqlDatabase &database, const SqlDialect &dialect, QString sql,
+                     QObject *parent = nullptr);
 
     // Empty unless the statement failed to execute.
     [[nodiscard]] QString errorText() const { return error; }
@@ -24,6 +27,7 @@ private:
     bool run(const QString &sql);
 
     QSqlDatabase database;
+    const SqlDialect &dialect;
     QString statement;
     QString error;
 };
