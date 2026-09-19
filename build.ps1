@@ -76,7 +76,28 @@ if ($IsWindows) {
     New-Item -ItemType Directory -Path .\build\Release -Force
     Copy-Item .\build\SQLQueryAnalyzer.exe .\build\Release\SQLQueryAnalyzer.exe
     & "$QtPath\bin\windeployqt.exe" .\build\Release\SQLQueryAnalyzer.exe
-    
+
+    # windeployqt ships qsqlpsql.dll but not libpq.dll or what libpq loads
+    # Named rather than globbed, so a missing DLL stops the build
+    $postgresDlls = @(
+        "libpq.dll",
+        "libssl-3-x64.dll",
+        "libcrypto-3-x64.dll",
+        "libintl-9.dll",
+        "libiconv-2.dll",
+        "libwinpthread-1.dll"
+    )
+    try {
+        foreach ($dll in $postgresDlls) {
+            Copy-Item ".\deps\postgresql\$dll" .\build\Release\ -ErrorAction Stop
+        }
+        Copy-Item .\deps\postgresql\LICENSES.txt .\build\Release\LICENSES-postgresql.txt -ErrorAction Stop
+    }
+    catch {
+        Write-Error "Copying the PostgreSQL client DLLs failed: $_"
+        exit 1
+    }
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`nRunning tests..."
         $testExe = ".\build\SQLQueryTests.exe"

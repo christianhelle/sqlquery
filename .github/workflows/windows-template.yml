@@ -77,11 +77,13 @@ jobs:
           cmake --build build --config Release
           ${{ runner.temp }}\Qt\6.10.3\msvc2022_64\bin\windeployqt.exe .\build\Release\SQLQueryAnalyzer.exe
           rm .\build\Release\vc_redist.x64.exe
+          Copy-Item .\deps\postgresql\*.dll .\build\Release\
+          Copy-Item .\deps\postgresql\LICENSES.txt .\build\Release\LICENSES-postgresql.txt
 
       - name: Zip build
         working-directory: ${{ runner.temp }}
         run: |
-          7z a SQLQueryAnalyzer_Windows.zip ${{ github.workspace }}\build\Release\SQLQueryAnalyzer.exe -r
+          7z a SQLQueryAnalyzer_Windows.zip ${{ github.workspace }}\build\Release\*
 
       - name: Publish Build
         uses: actions/upload-artifact@master
@@ -98,7 +100,8 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: SQLiteQuerAnalyzer_Windows_Installer_v${{ inputs.version }}
-          path: ${{ github.workspace }}\artifacts\SQLQueryAnalyzer-Setup.exe
+          path: ${{ github.workspace }}\dist\artifacts\SQLQueryAnalyzer-Setup.exe
+          if-no-files-found: error
 
       - name: Build Chocolatey Package
         working-directory: ${{ github.workspace }}\dist\chocolatey

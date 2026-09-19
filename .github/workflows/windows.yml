@@ -11,8 +11,9 @@ on:
       - '!**/*.ui'
       - '!CMakeLists.txt'
       - '!src/**/*'
+      - '!deps/postgresql/**'
     branches:
-      - '*'
+      - '**'
 
 jobs:
   build:
