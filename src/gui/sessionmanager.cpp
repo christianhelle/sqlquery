@@ -1,5 +1,5 @@
 #include "sessionmanager.h"
-#include "../settings/recentfiles.h"
+#include "../settings/recentconnections.h"
 #include "../settings/settings.h"
 
 #include <QDir>
@@ -34,7 +34,7 @@ void SessionManager::restoreWindowState(WindowState *state) const {
 }
 
 void SessionManager::loadRecentFiles(QMenu *menu, QObject *parent) const {
-    QStringList files = RecentFiles::getList();
+    QStringList files = RecentConnections::getList();
     if (files.isEmpty())
         return;
 
@@ -49,11 +49,11 @@ void SessionManager::loadRecentFiles(QMenu *menu, QObject *parent) const {
 }
 
 void SessionManager::addRecentFile(const QString &filepath) const {
-    RecentFiles::add(filepath);
+    RecentConnections::add(filepath);
 }
 
 QStringList SessionManager::getRecentFiles() const {
-    return RecentFiles::getList();
+    return RecentConnections::getList();
 }
 
 void SessionManager::setLastUsedExportPath(const QString &path) {

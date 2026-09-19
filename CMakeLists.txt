@@ -66,8 +66,8 @@ set(COMMON_SRCS
   src/gui/zoomlevel.h
   src/gui/zoompresenter.cpp
   src/gui/zoompresenter.h
-  src/settings/recentfiles.cpp
-  src/settings/recentfiles.h
+  src/settings/recentconnections.cpp
+  src/settings/recentconnections.h
   src/settings/settings.cpp
   src/settings/settings.h
   src/database/dbexport.cpp

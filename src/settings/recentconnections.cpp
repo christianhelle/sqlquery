@@ -1,33 +1,43 @@
-#include "recentfiles.h"
+#include "recentconnections.h"
 #include "settings.h"
+
+#include "../database/connectioninfo.h"
 
 #include <QOperatingSystemVersion>
 #include <QStringList>
 #include <QFile>
 #include <QTextStream>
 
-QString RecentFiles::getRecentsFilePath() {
+QString RecentConnections::getRecentsFilePath() {
     return Settings::getSettingsFolder() + "/.recents";
 }
 
-QString RecentFiles::sanitize(const QString &filepath) {
+// Only a file path has its separators made native; a URL is left as written.
+QString RecentConnections::sanitize(const QString &connection) {
+    if (!ConnectionInfo::fromUrl(connection).isFile())
+        return connection;
     return QOperatingSystemVersion::currentType() != QOperatingSystemVersion::Windows
-               ? QString(filepath).replace('\\', '/')
-               : QString(filepath).replace('/', '\\');
+               ? QString(connection).replace('\\', '/')
+               : QString(connection).replace('/', '\\');
 }
 
-void RecentFiles::add(const QString &filepath) {
-    if (filepath.isEmpty() || !QFile::exists(filepath))
+bool RecentConnections::isAvailable(const QString &connection) {
+    const ConnectionInfo info = ConnectionInfo::fromUrl(connection);
+    return !info.isEmpty() && (!info.isFile() || QFile::exists(info.filePath));
+}
+
+void RecentConnections::add(const QString &connection) {
+    if (connection.isEmpty() || !isAvailable(connection))
         return;
 
     auto files = getList();
-    const auto native_path = sanitize(filepath);
+    const auto native_path = sanitize(connection);
     if (files.contains(native_path, Qt::CaseInsensitive)) {
         return;
     }
     files.append(native_path);
 
-    const QString recentsFilePath = RecentFiles::getRecentsFilePath();
+    const QString recentsFilePath = RecentConnections::getRecentsFilePath();
     const auto file = std::make_unique<QFile>(recentsFilePath);
     if (!file->open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)) {
         return;
@@ -41,14 +51,14 @@ void RecentFiles::add(const QString &filepath) {
     file->close();
 }
 
-void RecentFiles::clear() {
+void RecentConnections::clear() {
     QFile::remove(getRecentsFilePath());
 }
 
-QStringList RecentFiles::getList() {
+QStringList RecentConnections::getList() {
     QStringList files;
 
-    const QString filePath = RecentFiles::getRecentsFilePath();
+    const QString filePath = RecentConnections::getRecentsFilePath();
     const auto file = std::make_unique<QFile>(filePath);
     if (!file->open(QIODevice::ReadWrite | QIODevice::Text)) {
         return files;
@@ -57,7 +67,7 @@ QStringList RecentFiles::getList() {
     if (QTextStream in(file.get()); in.seek(0)) {
         while (!in.atEnd()) {
             if (const auto path = sanitize(in.readLine());
-                !files.contains(path, Qt::CaseInsensitive) && QFile::exists(path)) {
+                !files.contains(path, Qt::CaseInsensitive) && isAvailable(path)) {
                 files.append(path);
             }
         }

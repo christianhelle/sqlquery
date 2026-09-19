@@ -69,7 +69,7 @@ set(PROD_SRCS
     ../src/gui/prompts.cpp
     ../src/database/dbtree.cpp
     ../src/settings/settings.cpp
-    ../src/settings/recentfiles.cpp
+    ../src/settings/recentconnections.cpp
     ../src/gui/zoomlevel.cpp
     ../src/gui/zoompresenter.cpp
 )
