@@ -26,7 +26,7 @@ void Settings::init() {
 QString Settings::getSettingsFolder() {
     constexpr auto type = QStandardPaths::HomeLocation;
     const auto home_path = QStandardPaths::writableLocation(type);
-    return home_path + "/.sqlite_query_analyzer";
+    return home_path + "/.sql_query_analyzer";
 }
 
 void Settings::getMainWindowState(WindowState *state) {
