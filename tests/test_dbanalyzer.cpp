@@ -232,3 +232,31 @@ TEST_F(DbAnalyzerTest, AnalyzeReportsFailureOnAClosedDatabase) {
     EXPECT_FALSE(analyzer->analyze(info));
     EXPECT_TRUE(info.tables.isEmpty());
 }
+
+TEST_F(DbAnalyzerTest, AnalyzeReportsProviderAndEngineVersion) {
+    DatabaseInfo info;
+    ASSERT_TRUE(analyzer->analyze(info));
+
+    EXPECT_EQ(info.provider, Provider::Sqlite);
+    EXPECT_FALSE(info.databaseVersion.isEmpty());
+    EXPECT_EQ(info.filename, "test.db");
+}
+
+TEST_F(DbAnalyzerTest, AnalyzeLeavesSchemaEmptyForSqlite) {
+    DatabaseInfo info;
+    ASSERT_TRUE(analyzer->analyze(info));
+
+    for (const auto &table : info.tables)
+        EXPECT_TRUE(table.schema.isEmpty()) << table.name.toStdString();
+}
+
+TEST_F(DbAnalyzerTest, AnalyzeSkipsEveryInternalSqliteTable) {
+    runSql("CREATE TABLE seq (id INTEGER PRIMARY KEY AUTOINCREMENT)");
+    runSql("ANALYZE");
+
+    DatabaseInfo info;
+    ASSERT_TRUE(analyzer->analyze(info));
+
+    for (const auto &table : info.tables)
+        EXPECT_FALSE(table.name.startsWith("sqlite_")) << table.name.toStdString();
+}
