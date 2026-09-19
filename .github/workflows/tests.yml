@@ -74,7 +74,7 @@ jobs:
       - name: Build
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Debug
-          cmake --build build --parallel
+          cmake --build build --parallel 4
 
       - name: Wait for SQL Server
         run: |
