@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# SQLiteQueryAnalyzer - Installation Script
-# This script downloads and installs the latest release of SQLiteQueryAnalyzer
+# SQLQueryAnalyzer - Installation Script
+# This script downloads and installs the latest release of SQLQueryAnalyzer
 
 set -euo pipefail
 
@@ -13,9 +13,9 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-GITHUB_REPO="christianhelle/sqlitequery"
+GITHUB_REPO="christianhelle/sqlquery"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
-BINARY_NAME="SQLiteQueryAnalyzer"
+BINARY_NAME="SQLQueryAnalyzer"
 
 # Functions
 log_info() {
@@ -181,10 +181,10 @@ download_and_install_linux() {
     local temp_dir=$(mktemp -d)
     local archive_name=$(basename "$download_url")
     
-    log_info "Downloading SQLiteQueryAnalyzer $version for $platform..."
+    log_info "Downloading SQLQueryAnalyzer $version for $platform..."
     
     if ! curl -L -o "$temp_dir/$archive_name" "$download_url"; then
-        log_error "Failed to download SQLiteQueryAnalyzer"
+        log_error "Failed to download SQLQueryAnalyzer"
         rm -rf "$temp_dir"
         exit 1
     fi
@@ -227,7 +227,7 @@ download_and_install_linux() {
         else
             log_error "Cannot write to $INSTALL_DIR and sudo is not available"
             log_info "Try setting INSTALL_DIR to a writable directory:"
-            log_info "  curl -fsSL https://christianhelle.com/sqlitequery/install.sh | INSTALL_DIR=\$HOME/.local/bin bash -s --"
+            log_info "  curl -fsSL https://christianhelle.com/sqlquery/install.sh | INSTALL_DIR=\$HOME/.local/bin bash -s --"
             rm -rf "$temp_dir"
             exit 1
         fi
@@ -239,7 +239,7 @@ download_and_install_linux() {
     # Cleanup
     rm -rf "$temp_dir"
     
-    log_success "SQLiteQueryAnalyzer $version installed successfully!"
+    log_success "SQLQueryAnalyzer $version installed successfully!"
     return 0
 }
 
@@ -264,13 +264,13 @@ download_and_install_macos() {
     fi
     
     local temp_dir=$(mktemp -d)
-    local dmg_path="$temp_dir/sqlitequery.dmg"
-    local mount_point="/Volumes/SQLiteQueryAnalyzer"
+    local dmg_path="$temp_dir/sqlquery.dmg"
+    local mount_point="/Volumes/SQLQueryAnalyzer"
     
-    log_info "Downloading SQLiteQueryAnalyzer $version for macOS ($arch_label)..."
+    log_info "Downloading SQLQueryAnalyzer $version for macOS ($arch_label)..."
     
     if ! curl -L -o "$dmg_path" "$download_url"; then
-        log_error "Failed to download SQLiteQueryAnalyzer"
+        log_error "Failed to download SQLQueryAnalyzer"
         rm -rf "$temp_dir"
         exit 1
     fi
@@ -285,7 +285,7 @@ download_and_install_macos() {
     log_info "Installing to /Applications..."
     
     # Find the .app bundle in the mounted volume
-    local app_source="$mount_point/SQLiteQueryAnalyzer.app"
+    local app_source="$mount_point/SQLQueryAnalyzer.app"
     
     if [[ ! -d "$app_source" ]]; then
         log_error "Application bundle not found in DMG"
@@ -305,7 +305,7 @@ download_and_install_macos() {
         exit 1
     fi
 
-    local staged_app="$staging_dir/SQLiteQueryAnalyzer.app"
+    local staged_app="$staging_dir/SQLQueryAnalyzer.app"
     if [[ ! -d "$staged_app" ]]; then
         log_error "Staged application bundle not found: $staged_app"
         hdiutil detach "$mount_point" 2>/dev/null || true
@@ -315,10 +315,10 @@ download_and_install_macos() {
 
     # Install with backup/restore to avoid leaving the system without the app if move fails
     backup=""
-    if [[ -d "/Applications/SQLiteQueryAnalyzer.app" ]]; then
-        backup="/Applications/SQLiteQueryAnalyzer.app.bak.$(date +%s)"
+    if [[ -d "/Applications/SQLQueryAnalyzer.app" ]]; then
+        backup="/Applications/SQLQueryAnalyzer.app.bak.$(date +%s)"
         log_info "Moving existing installation to backup: $backup"
-        if ! mv "/Applications/SQLiteQueryAnalyzer.app" "$backup"; then
+        if ! mv "/Applications/SQLQueryAnalyzer.app" "$backup"; then
             log_error "Failed to move existing installation to backup: $backup"
             hdiutil detach "$mount_point" 2>/dev/null || true
             rm -rf "$temp_dir" "$staging_dir"
@@ -330,8 +330,8 @@ download_and_install_macos() {
         log_error "Failed to move staged application into /Applications"
         # Attempt to restore backup if it exists
         if [[ -n "$backup" ]] && [[ -d "$backup" ]]; then
-            log_info "Restoring backup to /Applications/SQLiteQueryAnalyzer.app"
-            if ! mv "$backup" "/Applications/SQLiteQueryAnalyzer.app"; then
+            log_info "Restoring backup to /Applications/SQLQueryAnalyzer.app"
+            if ! mv "$backup" "/Applications/SQLQueryAnalyzer.app"; then
                 log_error "Failed to restore backup: $backup"
             fi
         fi
@@ -352,7 +352,7 @@ download_and_install_macos() {
     # Cleanup
     rm -rf "$temp_dir"
     
-    log_success "SQLiteQueryAnalyzer $version installed successfully!"
+    log_success "SQLQueryAnalyzer $version installed successfully!"
     return 0
 }
 
@@ -369,9 +369,9 @@ verify_installation() {
 }
 
 verify_macos_installation() {
-    if [[ -d "/Applications/SQLiteQueryAnalyzer.app" ]]; then
+    if [[ -d "/Applications/SQLQueryAnalyzer.app" ]]; then
         log_success "Installation verified"
-        log_info "You can find SQLiteQueryAnalyzer in /Applications or Launchpad"
+        log_info "You can find SQLQueryAnalyzer in /Applications or Launchpad"
     else
         log_warning "Application not found in /Applications"
     fi
@@ -379,7 +379,7 @@ verify_macos_installation() {
 }
 
 show_usage() {
-    echo "SQLiteQueryAnalyzer Installation Script"
+    echo "SQLQueryAnalyzer Installation Script"
     echo ""
     echo "Usage: $0 [OPTIONS]"
     echo ""
@@ -392,13 +392,13 @@ show_usage() {
     echo ""
     echo "Examples:"
     echo "  # Install to default location"
-    echo "  curl -fsSL https://christianhelle.com/sqlitequery/install.sh | bash"
+    echo "  curl -fsSL https://christianhelle.com/sqlquery/install.sh | bash"
     echo ""
     echo "  # Install to custom directory (set INSTALL_DIR in the receiving shell)"
-    echo "  curl -fsSL https://christianhelle.com/sqlitequery/install.sh | INSTALL_DIR=\$HOME/.local/bin bash -s --"
+    echo "  curl -fsSL https://christianhelle.com/sqlquery/install.sh | INSTALL_DIR=\$HOME/.local/bin bash -s --"
     echo ""
     echo "  # Install to custom directory using flag"
-    echo "  curl -fsSL https://christianhelle.com/sqlitequery/install.sh | bash -s -- --dir \$HOME/.local/bin"
+    echo "  curl -fsSL https://christianhelle.com/sqlquery/install.sh | bash -s -- --dir \$HOME/.local/bin"
     return 0
 }
 
@@ -434,7 +434,7 @@ main() {
         esac
     done
     
-    log_info "Starting SQLiteQueryAnalyzer installation..."
+    log_info "Starting SQLQueryAnalyzer installation..."
     
     # Detect platform
     local platform=$(detect_platform)
@@ -480,8 +480,8 @@ main() {
     
     echo ""
     log_success "🎉 Installation complete!"
-    log_info "Get started with: SQLiteQueryAnalyzer"
-    log_info "Documentation: https://christianhelle.com/sqlitequery/"
+    log_info "Get started with: SQLQueryAnalyzer"
+    log_info "Documentation: https://christianhelle.com/sqlquery/"
 }
 
 # Run main function with all arguments

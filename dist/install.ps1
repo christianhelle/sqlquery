@@ -5,8 +5,8 @@ param(
   [switch]$Help
 )
 
-$GitHubRepo = "christianhelle/sqlitequery"
-$BinaryName = "SQLiteQueryAnalyzer.exe"
+$GitHubRepo = "christianhelle/sqlquery"
+$BinaryName = "SQLQueryAnalyzer.exe"
 
 function Write-ColorOutput {
   param([string]$Message, [string]$Color = "White", [string]$Emoji = "")
@@ -20,7 +20,7 @@ function Write-InstallWarning { param([string]$Message) Write-ColorOutput -Messa
 function Write-InstallError { param([string]$Message) Write-ColorOutput -Message $Message -Color "Red" -Emoji "x" }
 
 function Get-DefaultInstallDir {
-  return "${env:ProgramFiles}\SQLiteQueryAnalyzer"
+  return "${env:ProgramFiles}\SQLQueryAnalyzer"
 }
 
 function Test-IsInPath {
@@ -80,14 +80,14 @@ function Get-AssetUrl {
   }
 }
 
-function Install-SQLiteQueryAnalyzer {
+function Install-SQLQueryAnalyzer {
   param([string]$Version, [string]$TargetDir)
   $downloadUrl = Get-AssetUrl -Version $Version
-  $tempDir = Join-Path $env:TEMP "sqlitequery-install-$(Get-Random)"
-  $installerPath = Join-Path $tempDir "SQLiteQueryAnalyzer-Setup.exe"
+  $tempDir = Join-Path $env:TEMP "sqlquery-install-$(Get-Random)"
+  $installerPath = Join-Path $tempDir "SQLQueryAnalyzer-Setup.exe"
   try {
     New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
-    Write-Info "Downloading SQLiteQueryAnalyzer $Version..."
+    Write-Info "Downloading SQLQueryAnalyzer $Version..."
     Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath -ErrorAction Stop
     Write-Info "Running installer..."
     $installerArgs = @(
@@ -100,7 +100,7 @@ function Install-SQLiteQueryAnalyzer {
     if ($process.ExitCode -ne 0) {
       throw "Installer exited with code: $($process.ExitCode)"
     }
-    Write-Success "SQLiteQueryAnalyzer $Version installed successfully!"
+    Write-Success "SQLQueryAnalyzer $Version installed successfully!"
     return (Join-Path $TargetDir $BinaryName)
   } catch {
     Write-InstallError "Installation failed: $($_.Exception.Message)"
@@ -124,21 +124,21 @@ function Test-Installation {
 function Main {
   if ($Help) {
     Write-Host ""
-    Write-Host "SQLiteQueryAnalyzer Installation Script for Windows" -ForegroundColor Cyan
+    Write-Host "SQLQueryAnalyzer Installation Script for Windows" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Usage:" -ForegroundColor Yellow
-    Write-Host "  Invoke-RestMethod https://christianhelle.com/sqlitequery/install.ps1 | Invoke-Expression" -ForegroundColor White
+    Write-Host "  Invoke-RestMethod https://christianhelle.com/sqlquery/install.ps1 | Invoke-Expression" -ForegroundColor White
     Write-Host ""
     Write-Host "Parameters:" -ForegroundColor Yellow
     Write-Host "  -InstallDir <path>   Installation directory (optional)" -ForegroundColor White
     Write-Host ""
     Write-Host "Examples:" -ForegroundColor Yellow
-    Write-Host "  Invoke-RestMethod https://christianhelle.com/sqlitequery/install.ps1 -OutFile install.ps1; .\install.ps1" -ForegroundColor Gray
-    Write-Host "  Invoke-RestMethod https://christianhelle.com/sqlitequery/install.ps1 -OutFile install.ps1; .\install.ps1 -InstallDir 'C:\MyApps'" -ForegroundColor Gray
+    Write-Host "  Invoke-RestMethod https://christianhelle.com/sqlquery/install.ps1 -OutFile install.ps1; .\install.ps1" -ForegroundColor Gray
+    Write-Host "  Invoke-RestMethod https://christianhelle.com/sqlquery/install.ps1 -OutFile install.ps1; .\install.ps1 -InstallDir 'C:\MyApps'" -ForegroundColor Gray
     return
   }
 
-  Write-Info "Starting SQLiteQueryAnalyzer installation for Windows..."
+  Write-Info "Starting SQLQueryAnalyzer installation for Windows..."
 
   if (-not $InstallDir) { $InstallDir = Get-DefaultInstallDir }
   Write-Info "Target directory: $InstallDir"
@@ -146,7 +146,7 @@ function Main {
   try {
     $version = Get-LatestRelease
     Write-Info "Latest version: $version"
-    $binaryPath = Install-SQLiteQueryAnalyzer -Version $version -TargetDir $InstallDir
+    $binaryPath = Install-SQLQueryAnalyzer -Version $version -TargetDir $InstallDir
     $ok = $false
     try {
         $ok = Test-Installation -BinaryPath $binaryPath
@@ -157,7 +157,7 @@ function Main {
     if ($ok) {
         Write-Host ""
         Write-Success "Installation complete!"
-        Write-Info "You can launch SQLiteQueryAnalyzer from the Start Menu"
+        Write-Info "You can launch SQLQueryAnalyzer from the Start Menu"
     } else {
         Write-InstallError "Installation verification failed"
         exit 1

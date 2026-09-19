@@ -1,8 +1,8 @@
-name: sqlitequery
+name: sqlquery
 base: core24
 summary: Lightweight cross-platform SQLite database explorer
 description: |
-  SQLite Query Analyzer is a lightweight and efficient desktop utility designed
+  SQL Query Analyzer is a lightweight and efficient desktop utility designed
   to simplify the process of managing SQLite databases.
 
   It provides an intuitive interface for executing queries and direct table editing,
@@ -22,9 +22,9 @@ grade: stable
 confinement: strict
 
 apps:
-  sqlitequery:
-    command: bin/SQLiteQueryAnalyzer
-    desktop: usr/share/applications/sqlitequery.desktop
+  sqlquery:
+    command: bin/SQLQueryAnalyzer
+    desktop: usr/share/applications/sqlquery.desktop
     plugs:
       - desktop
       - desktop-legacy
@@ -34,7 +34,7 @@ apps:
       - home
 
 parts:
-  sqlitequery:
+  sqlquery:
     plugin: dump
     source: src/linux
     source-type: local

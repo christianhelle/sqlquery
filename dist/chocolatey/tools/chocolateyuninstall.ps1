@@ -1,2 +1,2 @@
-﻿Remove-Item "$Home\Desktop\SQLite Query Analyzer.lnk"
+﻿Remove-Item "$Home\Desktop\SQL Query Analyzer.lnk"
 

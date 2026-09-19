@@ -1,10 +1,10 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=SQLite Query Analyzer
+Name=SQL Query Analyzer
 Comment=Lightweight cross-platform SQLite database explorer
-Exec=sqlitequery %F
-Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/sqlitequery.png
+Exec=sqlquery %F
+Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/sqlquery.png
 Categories=Development;Database
 Terminal=false
 StartupNotify=true
