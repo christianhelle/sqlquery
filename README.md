@@ -45,7 +45,7 @@ making database operations seamless and straightforward.
 | Provider | Qt driver | Client library needed at runtime |
 |---|---|---|
 | SQLite | `QSQLITE` | none, built into Qt |
-| PostgreSQL | `QPSQL` | libpq (`libpq5` on Debian/Ubuntu, `libpq.dll` next to the executable on Windows) |
+| PostgreSQL | `QPSQL` | libpq (`libpq5` on Debian/Ubuntu; bundled with the Windows build, see [`deps/postgresql`](deps/postgresql/README.md)) |
 | SQL Server | `QODBC` | unixODBC plus the [Microsoft ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server) (Windows ships the ODBC driver manager) |
 | MySQL / MariaDB | `QMYSQL` | libmariadb or libmysqlclient |
 
