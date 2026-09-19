@@ -49,11 +49,11 @@ MainWindow::MainWindow(IDatabase *database, QWidget *parent) :
     connect(exportOrchestrator.get(), &ExportOrchestrator::exportCompleted,
             this, &MainWindow::onExportCompleted);
 
-    this->recentFilesMenu = std::make_unique<QMenu>("Recent Files");
-    ui->menuFile->insertMenu(ui->actionSave, recentFilesMenu.get());
+    this->recentConnectionsMenu = std::make_unique<QMenu>("Recent Connections");
+    ui->menuFile->insertMenu(ui->actionSave, recentConnectionsMenu.get());
 
     sessionManager->init();
-    sessionManager->loadRecentFiles(recentFilesMenu.get(), this);
+    sessionManager->loadRecentConnections(recentConnectionsMenu.get(), this);
     restoreWindowState();
 
     loaded = true;
@@ -258,13 +258,12 @@ void MainWindow::resizeEvent(QResizeEvent *e) {
     QMainWindow::resizeEvent(e);
 }
 
-void MainWindow::openRecentFile() {
+void MainWindow::openRecentConnection() {
     const auto *senderObject = sender();
     if (senderObject == nullptr) {
         return;
     }
-    const QString file = senderObject->objectName();
-    this->openDatabase(file);
+    this->openDatabase(senderObject->objectName());
 }
 
 void MainWindow::restoreLastSession() {
@@ -322,8 +321,8 @@ bool MainWindow::openConnection(const ConnectionInfo &connection) {
     }
 
     this->analyzeDatabase();
-    sessionManager->addRecentFile(connection.toUrl());
-    sessionManager->loadRecentFiles(recentFilesMenu.get(), this);
+    sessionManager->addRecentConnection(connection.toUrl());
+    sessionManager->loadRecentConnections(recentConnectionsMenu.get(), this);
 
     ui->queryResultMessagesTextEdit->clear();
     ui->tabWidget->setCurrentIndex(0);

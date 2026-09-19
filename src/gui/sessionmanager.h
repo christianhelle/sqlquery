@@ -25,10 +25,10 @@ public:
     void saveWindowState(const WindowState &state);
     void restoreWindowState(WindowState *state) const;
 
-    // Recent files
-    void loadRecentFiles(QMenu *menu, QObject *parent) const;
-    void addRecentFile(const QString &filepath) const;
-    QStringList getRecentFiles() const;
+    // Recent connections
+    void loadRecentConnections(QMenu *menu, QObject *parent) const;
+    void addRecentConnection(const QString &connection) const;
+    QStringList getRecentConnections() const;
 
     // Export path
     void setLastUsedExportPath(const QString &path);

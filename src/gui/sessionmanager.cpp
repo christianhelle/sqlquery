@@ -33,26 +33,26 @@ void SessionManager::restoreWindowState(WindowState *state) const {
     Settings::getMainWindowState(state);
 }
 
-void SessionManager::loadRecentFiles(QMenu *menu, QObject *parent) const {
-    QStringList files = RecentConnections::getList();
-    if (files.isEmpty())
+void SessionManager::loadRecentConnections(QMenu *menu, QObject *parent) const {
+    QStringList connections = RecentConnections::getList();
+    if (connections.isEmpty())
         return;
 
     if (!menu->actions().isEmpty())
         menu->clear();
 
-    foreach (const QString &file, files) {
-        QAction *action = menu->addAction(file);
-        action->setObjectName(file);
-        connect(action, SIGNAL(triggered(bool)), parent, SLOT(openRecentFile()));
+    foreach (const QString &connection, connections) {
+        QAction *action = menu->addAction(connection);
+        action->setObjectName(connection);
+        connect(action, SIGNAL(triggered(bool)), parent, SLOT(openRecentConnection()));
     }
 }
 
-void SessionManager::addRecentFile(const QString &filepath) const {
-    RecentConnections::add(filepath);
+void SessionManager::addRecentConnection(const QString &connection) const {
+    RecentConnections::add(connection);
 }
 
-QStringList SessionManager::getRecentFiles() const {
+QStringList SessionManager::getRecentConnections() const {
     return RecentConnections::getList();
 }
 

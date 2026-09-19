@@ -83,7 +83,7 @@ public slots:
 
     void about();
 
-    void openRecentFile();
+    void openRecentConnection();
 
     void onExportProgress(uint64_t rowsExported);
 
@@ -91,7 +91,7 @@ public slots:
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;
-    std::unique_ptr<QMenu> recentFilesMenu;
+    std::unique_ptr<QMenu> recentConnectionsMenu;
     IDatabase *database;
     std::unique_ptr<DbAnalyzer> analyzer;
     std::unique_ptr<QueryExecutor> executor;
