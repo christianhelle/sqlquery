@@ -12,7 +12,11 @@
 # SQL Query Analyzer
 
 SQL Query Analyzer is a lightweight and efficient desktop utility designed
-to simplify the process of managing SQLite databases.
+to simplify the process of managing SQLite, PostgreSQL, SQL Server and
+MySQL/MariaDB databases.
+
+It is a fork of [SQLite Query Analyzer](https://github.com/christianhelle/sqlitequery)
+that talks to database servers as well as SQLite files.
 
 It provides an intuitive interface for executing queries and direct table editing,
 making database operations seamless and straightforward.
@@ -20,6 +24,10 @@ making database operations seamless and straightforward.
 ## Features
 
 - Cross platform - Runs natively on Windows, MacOS, and Linux
+- Works with SQLite files and PostgreSQL, SQL Server and MySQL/MariaDB servers
+- Connect dialog with a Test Connection button; recent connections are remembered
+  (passwords never are)
+- Schema-aware database tree showing `schema.table` for providers that have schemas
 - Easy-to-use interface for executing SQL queries
 - Fast table data editing
 - Persists application state and reloads last session on startup
@@ -31,6 +39,50 @@ making database operations seamless and straightforward.
   editor, and answer both gestures themselves
 - Desktop color theme awareness with automatic switching between dark/light themes
 - Command line interface for automation and scripting
+
+## Supported Databases
+
+| Provider | Qt driver | Client library needed at runtime |
+|---|---|---|
+| SQLite | `QSQLITE` | none, built into Qt |
+| PostgreSQL | `QPSQL` | libpq (`libpq5` on Debian/Ubuntu, `libpq.dll` next to the executable on Windows) |
+| SQL Server | `QODBC` | unixODBC plus the [Microsoft ODBC Driver 18 for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server) (Windows ships the ODBC driver manager) |
+| MySQL / MariaDB | `QMYSQL` | libmariadb or libmysqlclient |
+
+The official Qt binaries for Windows and macOS do not include the `QMYSQL` driver,
+so MySQL/MariaDB support there needs a Qt build that has it.
+
+Use **File > Connect...** (Ctrl+Shift+O) to open any provider. **File > Open**
+and **File > New** still open and create SQLite files directly.
+
+### Connection URLs
+
+The command line, the recent connections list and the saved session all describe a
+connection in a single line:
+
+| Provider | Example |
+|---|---|
+| SQLite | `/path/to/database.db` |
+| PostgreSQL | `postgres://user@host:5432/database` |
+| SQL Server | `mssql://user@host:1433/database?trust=1` |
+| MySQL / MariaDB | `mysql://user@host:3306/database` |
+
+SQL Server takes these extra query options: `trust=1` accepts a self-signed server
+certificate, `integrated=1` uses Windows authentication, and `driver=...` names
+another ODBC driver. A password is never written out. On the command line, give it
+with `--password`, the `SQLQUERY_PASSWORD` environment variable, or inside the URL
+(`postgres://user:secret@host/db`).
+
+### Known limitations
+
+- Scripts are split into statements on `;`. SQL Server `GO` batches and PostgreSQL
+  `$$` function bodies are not understood yet.
+- The table data grid for PostgreSQL and SQL Server reads the whole result set on
+  the client, so paging only happens in the view.
+- Views, stored procedures and other databases on the same server are not listed
+  in the tree.
+- **Shrink** runs `VACUUM` on SQLite and PostgreSQL and `DBCC SHRINKDATABASE` on
+  SQL Server. It is disabled for MySQL.
 
 ## Installation
 
@@ -61,19 +113,26 @@ SQL Query Analyzer can be used as a command line tool for automating database op
 ```sh
 $ sqlquery --help
 Usage: sqlquery [options] database
-A fast and lightweight cross-platform command line and GUI tool for querying and manipulating SQLite databases
+A fast and lightweight cross-platform command line and GUI tool for querying and manipulating SQLite, PostgreSQL, SQL Server and MySQL databases
 
 Options:
-  -h, --help              Displays help on commandline options.
-  --help-all              Displays help, including generic Qt options.
-  -v, --version           Displays version information.
-  -p, --progress          Show progress during copy
-  -e, --export-csv        Export data to CSV.
-  -d, --target-directory  Target directory for export.
-  -r, --run-sql           Execute SQL file.
+  -h, --help                          Displays help on commandline options.
+  --help-all                          Displays help, including generic Qt
+                                      options.
+  -v, --version                       Displays version information.
+  -p, --progress                      Show progress during copy
+  -e, --export-csv                    Export data to CSV.
+  -d, --target-directory <directory>  Target directory for export.
+  -r, --run-sql <file>                Execute SQL file.
+  --password <password>               Password for a server connection.
+                                      Defaults to the SQLQUERY_PASSWORD
+                                      environment variable.
 
 Arguments:
-  database                Database file to open.
+  database                            SQLite file or connection URL to open,
+                                      e.g. postgres://user@host:5432/db,
+                                      mysql://user@host/db or
+                                      mssql://user@host/db?trust=1
 ```
 
 ### Usage Examples
@@ -81,6 +140,19 @@ Arguments:
 #### Opening a database in GUI mode
 ```sh
 sqlquery /path/to/database.db
+
+# A server connection opens the Connect dialog to ask for the password,
+# unless one is given
+SQLQUERY_PASSWORD=secret sqlquery postgres://postgres@localhost/shop
+```
+
+#### Working with a server
+```sh
+# Export every table of a PostgreSQL database to CSV
+sqlquery --export-csv -d ./out --password secret postgres://postgres@localhost:5432/shop
+
+# Run a script against SQL Server
+SQLQUERY_PASSWORD=secret sqlquery --run-sql seed.sql "mssql://sa@localhost/master?trust=1"
 ```
 
 #### Exporting data to CSV files
@@ -186,6 +258,12 @@ Build project
 make
 ```
 
+Install the Qt SQL drivers for the servers you want to reach (Ubuntu package names)
+
+```sh
+sudo apt-get install -y libqt6sql6-psql libqt6sql6-mysql libqt6sql6-odbc
+```
+
 Create installable packages (DEB, RPM, 7Z, ZIP, and compressed archives)
 
 ```sh
@@ -237,6 +315,28 @@ Build the installer project using Inno Setup (Optional)
 ```pwsh
 ../deps/innosetup/ISCC.exe dist/setup.iss
 ```
+
+## Testing
+
+The unit tests use in-memory and temporary SQLite databases and need nothing else:
+
+```sh
+make test
+```
+
+The provider integration tests in `tests/test_providers.cpp` run against real
+servers. A provider is skipped unless its connection URL is set:
+
+```sh
+docker compose -f tests/docker-compose.yml up -d
+export SQLQUERY_TEST_PG='postgres://postgres:SqlQuery_2026@localhost:5432/postgres'
+export SQLQUERY_TEST_MYSQL='mysql://root:SqlQuery_2026@127.0.0.1:3306/test'
+export SQLQUERY_TEST_MSSQL='mssql://sa:SqlQuery_2026@localhost:1433/master?trust=1'
+./build/tests/SQLQueryTests --gtest_filter='Servers/*'
+```
+
+The `Tests` GitHub workflow runs both against PostgreSQL, MariaDB and SQL Server
+service containers.
 
 ## Contributing
 
