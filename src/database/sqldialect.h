@@ -103,6 +103,14 @@ public:
     [[nodiscard]] QString schemaFingerprintQuery() const override;
     [[nodiscard]] QString shrinkStatement() const override { return QStringLiteral("DBCC SHRINKDATABASE(0)"); }
 
+    // A Script that uses GO is split into batches the way sqlcmd splits it:
+    // on a line holding only GO, optionally with a repeat count and a trailing
+    // comment. Each batch goes to the server whole, so a procedure body keeps
+    // its semicolons. A GO inside a block comment or a string is not a
+    // separator. A Script without GO is split on semicolons, as for any other
+    // Provider.
+    [[nodiscard]] QStringList splitScript(const QString &script) const override;
+
     // The ODBC connection string for a Connection.
     [[nodiscard]] static QString connectionString(const ConnectionInfo &info);
 };

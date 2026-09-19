@@ -1,5 +1,6 @@
 #include "sqldialect.h"
 
+#include <QRegularExpression>
 #include <QSqlDatabase>
 
 #include "sqlidentifier.h"
@@ -169,6 +170,89 @@ QString SqlServerDialect::connectionString(const ConnectionInfo &info) {
     if (info.trustServerCertificate)
         parts << "TrustServerCertificate=yes";
     return parts.join(QLatin1Char(';')) + QLatin1Char(';');
+}
+
+namespace {
+    // Where a line leaves the scanner: inside a /* */ comment, inside a string
+    // literal, or in plain SQL. Only a line that starts in plain SQL can be a
+    // GO separator.
+    struct ScanState {
+        bool inBlockComment = false;
+        bool inString = false;
+    };
+
+    void scanLine(const QString &line, ScanState &state) {
+        const qsizetype length = line.size();
+        for (qsizetype i = 0; i < length; ++i) {
+            const QChar c = line.at(i);
+            const QChar next = i + 1 < length ? line.at(i + 1) : QChar();
+            if (state.inBlockComment) {
+                if (c == '*' && next == '/') {
+                    state.inBlockComment = false;
+                    ++i;
+                }
+            } else if (state.inString) {
+                if (c == '\'') {
+                    // A doubled quote is an escaped one and keeps the string open.
+                    if (next == '\'')
+                        ++i;
+                    else
+                        state.inString = false;
+                }
+            } else if (c == '-' && next == '-') {
+                return;
+            } else if (c == '/' && next == '*') {
+                state.inBlockComment = true;
+                ++i;
+            } else if (c == '\'') {
+                state.inString = true;
+            } else if (c == '[' || c == '"') {
+                // A delimited name may hold a quote or a comment marker.
+                const QChar close = c == '[' ? QChar(']') : QChar('"');
+                for (++i; i < length; ++i) {
+                    if (line.at(i) == close) {
+                        if (i + 1 < length && line.at(i + 1) == close)
+                            ++i;
+                        else
+                            break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+QStringList SqlServerDialect::splitScript(const QString &script) const {
+    static const QRegularExpression separator(QStringLiteral(R"(^\s*GO(?:\s+(\d+))?\s*(?:--.*)?$)"),
+                                              QRegularExpression::CaseInsensitiveOption);
+
+    QStringList batches;
+    QString batch;
+    ScanState state;
+    bool usesGo = false;
+    for (const QString &line: script.split(QLatin1Char('\n'))) {
+        if (!state.inBlockComment && !state.inString) {
+            if (const auto match = separator.match(line); match.hasMatch()) {
+                usesGo = true;
+                const int count = match.captured(1).isEmpty() ? 1 : qMax(1, match.captured(1).toInt());
+                if (!batch.trimmed().isEmpty()) {
+                    for (int i = 0; i < count; ++i)
+                        batches << batch;
+                }
+                batch.clear();
+                continue;
+            }
+        }
+        batch += line + QLatin1Char('\n');
+        scanLine(line, state);
+    }
+
+    if (!usesGo)
+        return SqlDialect::splitScript(script);
+
+    if (!batch.trimmed().isEmpty())
+        batches << batch;
+    return batches;
 }
 
 QString SqlServerDialect::quoteIdentifier(const QString &name) const {
