@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "database/dbtree.h"
+#include "database/providerdatabase.h"
 #include <QStandardPaths>
+#include <QTemporaryDir>
 #include <QAction>
 #include <QFontInfo>
 #include <QPlainTextEdit>
@@ -119,6 +121,42 @@ TEST_F(MainWindowTest, TableNodesCarryTheirSchemaAndBareName) {
     EXPECT_EQ(items.first()->type(), DbTree::TableItemType);
     EXPECT_EQ(items.first()->data(0, DbTree::TableNameRole).toString(), "inserted_at");
     EXPECT_TRUE(items.first()->data(0, DbTree::SchemaRole).toString().isEmpty());
+}
+
+TEST_F(MainWindowTest, OffersAConnectAction) {
+    const MainWindow window(db.get());
+    EXPECT_NE(window.findChild<QAction *>("actionConnect"), nullptr);
+}
+
+TEST_F(MainWindowTest, OpeningAConnectionShowsItsTablesAndTitle) {
+    QTemporaryDir dir;
+    const QString path = dir.path() + "/opened.db";
+    {
+        ProviderDatabase seed;
+        seed.setConnection(ConnectionInfo::sqliteFile(path));
+        ASSERT_TRUE(seed.open());
+        QueryExecutor(&seed).runStatements({"CREATE TABLE seeded (id INTEGER)"});
+    }
+
+    ProviderDatabase database;
+    MainWindow window(&database);
+    ASSERT_TRUE(window.openConnection(ConnectionInfo::sqliteFile(path)));
+
+    EXPECT_TRUE(tableNames(window).contains("seeded"));
+    EXPECT_TRUE(window.windowTitle().endsWith(path));
+}
+
+// A Connection that cannot open says why in the messages pane rather than
+// failing silently, which is all a file Connection used to do.
+TEST_F(MainWindowTest, AFailedConnectionReportsWhy) {
+    ProviderDatabase database;
+    MainWindow window(&database);
+
+    EXPECT_FALSE(window.openConnection(ConnectionInfo::sqliteFile("/no/such/dir/x.db")));
+
+    const auto *messages = window.findChild<QPlainTextEdit *>("queryResultMessagesTextEdit");
+    ASSERT_NE(messages, nullptr);
+    EXPECT_FALSE(messages->toPlainText().isEmpty());
 }
 
 // The whole chain: a select naming a DDL word used to re-analyse the database
