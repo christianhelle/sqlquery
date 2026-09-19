@@ -40,10 +40,10 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <projectSourceUrl>https://github.com/christianhelle/sqlquery</projectSourceUrl>
     <docsUrl>https://github.com/christianhelle/sqlquery/blob/master/README.md</docsUrl>
     <bugTrackerUrl>https://github.com/christianhelle/sqlquery/issues</bugTrackerUrl>
-    <tags>sqlite database sdf compact-databases</tags>
-    <summary>A fast and lightweight cross-platform GUI tool for querying and manipulating SQLite databases</summary>
+    <tags>sqlite postgresql sql-server mysql mariadb database</tags>
+    <summary>A fast and lightweight cross-platform GUI tool for querying and manipulating SQLite, PostgreSQL, SQL Server and MySQL databases</summary>
     <description>
-A lightweight and efficient desktop utility designed to simplify the process of managing SQLite databases.
+A lightweight and efficient desktop utility designed to simplify the process of managing SQLite, PostgreSQL, SQL Server and MySQL databases.
 
 It provides an intuitive interface for executing queries and direct table editing, making database operations seamless and straightforward.
 

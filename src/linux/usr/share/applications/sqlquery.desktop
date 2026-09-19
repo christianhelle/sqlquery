@@ -2,7 +2,7 @@
 Version=1.0
 Type=Application
 Name=SQL Query Analyzer
-Comment=Lightweight cross-platform SQLite database explorer
+Comment=Lightweight cross-platform SQL database explorer
 Exec=sqlquery %F
 Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/sqlquery.png
 Categories=Development;Database
