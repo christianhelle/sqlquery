@@ -208,6 +208,36 @@ TEST_P(ProviderTest, DropTableRemovesIt) {
     EXPECT_EQ(find(analyze(), TableName), nullptr);
 }
 
+// A procedure body holds semicolons and has to reach SQL Server as one batch,
+// which is what GO marks out. GO with a count runs its batch that many times.
+TEST_P(ProviderTest, SqlServerScriptRunsGoBatches) {
+    if (connection.provider != Provider::SqlServer)
+        GTEST_SKIP() << "GO batches are SQL Server only";
+
+    const QString script = QString(
+            "DROP PROCEDURE IF EXISTS dbo.sq_it_count;\n"
+            "GO\n"
+            "CREATE PROCEDURE dbo.sq_it_count AS\n"
+            "BEGIN\n"
+            "    SET NOCOUNT ON;\n"
+            "    SELECT COUNT(*) AS n FROM %1;\n"
+            "END\n"
+            "GO\n"
+            "INSERT INTO %1 (id, name) SELECT MAX(id) + 1, 'Repeat' FROM %1\n"
+            "GO 2\n").arg(table());
+
+    QStringList errors;
+    executor->runScript(script, &errors);
+    EXPECT_TRUE(errors.isEmpty()) << errors.join("\n").toStdString();
+
+    const QueryResult counted = run("EXEC dbo.sq_it_count");
+    ASSERT_TRUE(counted.ok) << counted.error.toStdString();
+    ASSERT_EQ(counted.rows.size(), 1);
+    EXPECT_EQ(counted.rows.first().values.first().toInt(), 5);
+
+    run("DROP PROCEDURE IF EXISTS dbo.sq_it_count");
+}
+
 INSTANTIATE_TEST_SUITE_P(Servers, ProviderTest,
                          ::testing::Values(ProviderCase{"PostgreSql", "SQLQUERY_TEST_PG", "public"},
                                            ProviderCase{"SqlServer", "SQLQUERY_TEST_MSSQL", "dbo"},
