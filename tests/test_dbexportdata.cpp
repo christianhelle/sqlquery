@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "database/sqlitedatabase.h"
+#include "database/providerdatabase.h"
 #include "database/dbanalyzer.h"
 #include "database/queryexecutor.h"
 #include "database/dbexportdata.h"
@@ -16,8 +16,8 @@ protected:
         tempDir->setAutoRemove(true);
         dbPath = tempDir->path() + "/test.db";
         
-        db = std::make_unique<SqliteDatabase>();
-        db->setSource(dbPath);
+        db = std::make_unique<ProviderDatabase>();
+        db->setConnection(ConnectionInfo::sqliteFile(dbPath));
         db->open();
 
         // Create test data
@@ -41,7 +41,7 @@ protected:
 
     std::unique_ptr<QTemporaryDir> tempDir;
     QString dbPath;
-    std::unique_ptr<SqliteDatabase> db;
+    std::unique_ptr<ProviderDatabase> db;
     DatabaseInfo info;
 
     void runSql(const QStringList &statements) const {
@@ -137,8 +137,8 @@ TEST_F(DbDataExportTest, ExportWithTextTypes) {
     testDir.setAutoRemove(true);
     QString testDbPath = testDir.path() + "/test.db";
     
-    SqliteDatabase testDb;
-    testDb.setSource(testDbPath);
+    ProviderDatabase testDb;
+    testDb.setConnection(ConnectionInfo::sqliteFile(testDbPath));
     testDb.open();
 
     QStringList createSql;
@@ -181,8 +181,8 @@ TEST_F(DbDataExportTest, ExportWithSpecialCharacters) {
     testDir.setAutoRemove(true);
     QString testDbPath = testDir.path() + "/test.db";
     
-    SqliteDatabase testDb;
-    testDb.setSource(testDbPath);
+    ProviderDatabase testDb;
+    testDb.setConnection(ConnectionInfo::sqliteFile(testDbPath));
     testDb.open();
 
     QStringList createSql;

@@ -10,11 +10,9 @@ class InMemoryDatabase final : public SqlDatabaseAdapter {
 public:
     InMemoryDatabase();
 
-    void setSource(const QString &filename) override;
+    void setConnection(const ConnectionInfo &connection) override;
 
     bool open() override;
-
-    void shrink() override;
 };
 
 #endif // INMEMORYDATABASE_H

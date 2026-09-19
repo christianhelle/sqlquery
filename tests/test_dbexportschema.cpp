@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "database/sqlitedatabase.h"
+#include "database/providerdatabase.h"
 #include "database/dbanalyzer.h"
 #include "database/queryexecutor.h"
 #include "database/dbexportschema.h"
@@ -15,8 +15,8 @@ protected:
         tempDir->setAutoRemove(true);
         dbPath = tempDir->path() + "/test.db";
         
-        db = std::make_unique<SqliteDatabase>();
-        db->setSource(dbPath);
+        db = std::make_unique<ProviderDatabase>();
+        db->setConnection(ConnectionInfo::sqliteFile(dbPath));
         db->open();
 
         // Create test tables with constraints
@@ -36,7 +36,7 @@ protected:
 
     std::unique_ptr<QTemporaryDir> tempDir;
     QString dbPath;
-    std::unique_ptr<SqliteDatabase> db;
+    std::unique_ptr<ProviderDatabase> db;
     DatabaseInfo info;
 };
 
@@ -102,8 +102,8 @@ TEST_F(DbSchemaExportTest, ExportSchemaEmptyDatabase) {
     tempDir2.setAutoRemove(true);
     QString emptyDbPath = tempDir2.path() + "/empty.db";
     
-    SqliteDatabase emptyDb;
-    emptyDb.setSource(emptyDbPath);
+    ProviderDatabase emptyDb;
+    emptyDb.setConnection(ConnectionInfo::sqliteFile(emptyDbPath));
     emptyDb.open();
 
     DbAnalyzer analyzer(&emptyDb);

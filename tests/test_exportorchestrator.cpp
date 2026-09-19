@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QEventLoop>
 
-#include "database/sqlitedatabase.h"
+#include "database/providerdatabase.h"
 #include "database/dbanalyzer.h"
 #include "database/queryexecutor.h"
 #include "gui/exportorchestrator.h"
@@ -17,8 +17,8 @@ protected:
         tempDir->setAutoRemove(true);
         dbPath = tempDir->path() + "/test.db";
         
-        db = std::make_unique<SqliteDatabase>();
-        db->setSource(dbPath);
+        db = std::make_unique<ProviderDatabase>();
+        db->setConnection(ConnectionInfo::sqliteFile(dbPath));
         db->open();
 
         QStringList createSql;
@@ -37,7 +37,7 @@ protected:
 
     std::unique_ptr<QTemporaryDir> tempDir;
     QString dbPath;
-    std::unique_ptr<SqliteDatabase> db;
+    std::unique_ptr<ProviderDatabase> db;
     DatabaseInfo info;
 };
 

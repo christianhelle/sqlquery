@@ -48,7 +48,7 @@ add_executable(${PROJECT_NAME} ${TEST_SRCS})
 set(PROD_SRCS
     ../src/database/connectioninfo.cpp
     ../src/database/sqldialect.cpp
-    ../src/database/sqlitedatabase.cpp
+    ../src/database/providerdatabase.cpp
     ../src/database/inmemorydatabase.cpp
     ../src/database/pagedresultmodel.cpp
     ../src/database/sqldatabaseadapter.cpp

@@ -13,6 +13,20 @@ void SqlDatabaseAdapter::close() {
         database.close();
 }
 
+QString SqlDatabaseAdapter::lastError() const {
+    const QSqlError error = database.lastError();
+    return error.isValid() ? error.text() : QString();
+}
+
+void SqlDatabaseAdapter::shrink() {
+    const QString statement = sqlDialect->shrinkStatement();
+    if (!database.isOpen() || statement.isEmpty())
+        return;
+
+    QSqlQuery query(database);
+    query.exec(statement);
+}
+
 QueryResult SqlDatabaseAdapter::runStatement(const QString &sql) {
     QueryResult result;
     if (!database.isOpen()) {

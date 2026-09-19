@@ -4,7 +4,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "../database/sqlitedatabase.h"
+#include "../database/providerdatabase.h"
 #include "../database/queryexecutor.h"
 
 void Script::executeSqlFile(const QString &sqlFilePath,
@@ -18,8 +18,8 @@ void Script::executeSqlFile(const QString &sqlFilePath,
     time.start();
     const QString sqlScript = QTextStream(sqlFile.get()).readAll();
 
-    const auto database = std::make_unique<SqliteDatabase>();
-    database->setSource(dbFilePath);
+    const auto database = std::make_unique<ProviderDatabase>();
+    database->setConnection(ConnectionInfo::sqliteFile(dbFilePath));
     if (!database->open()) {
         qWarning("Unable to open database file");
         return;

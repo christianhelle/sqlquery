@@ -4,7 +4,7 @@
 
 #include "cli/export.h"
 #include "cli/script.h"
-#include "database/sqlitedatabase.h"
+#include "database/providerdatabase.h"
 #include "gui/mainwindow.h"
 
 constexpr auto Version = "1.0.0";
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     }
 
     // The window works on this Database and does not outlive it.
-    SqliteDatabase database;
+    ProviderDatabase database;
 
     if (args.length() == 1) {
         MainWindow window(&database);

@@ -1,5 +1,5 @@
 #include "export.h"
-#include "../database/sqlitedatabase.h"
+#include "../database/providerdatabase.h"
 #include "../database/dbanalyzer.h"
 
 void Export::exportDataToCsvFile(const QString &file,
@@ -16,8 +16,8 @@ void Export::exportDataToCsvFile(const QString &file,
     const auto tcs = std::make_unique<CancellationTokenSource>();
     const auto cancellationToken = tcs->get();
 
-    const auto database = std::make_unique<SqliteDatabase>();
-    database->setSource(file);
+    const auto database = std::make_unique<ProviderDatabase>();
+    database->setConnection(ConnectionInfo::sqliteFile(file));
     if (!database->open()) {
         qWarning("Unable to open file");
         return;

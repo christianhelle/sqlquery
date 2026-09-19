@@ -7,7 +7,7 @@ class QueryExecutorTest : public ::testing::Test {
 protected:
     void SetUp() override {
         db = std::make_unique<InMemoryDatabase>();
-        db->setSource(":memory:");
+        db->setConnection(ConnectionInfo::sqliteFile(":memory:"));
         db->open();
         executor = std::make_unique<QueryExecutor>(db.get());
 

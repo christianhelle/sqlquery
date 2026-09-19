@@ -13,7 +13,7 @@
 #include "gui/mainwindow.h"
 
 // The window takes an IDatabase, so it can be driven against the in-memory
-// adapter. Before that it built its own SqliteDatabase and none of this was
+// adapter. Before that it built its own ProviderDatabase and none of this was
 // reachable from a test.
 class MainWindowTest : public ::testing::Test {
 protected:
@@ -23,7 +23,7 @@ protected:
         ASSERT_TRUE(QStandardPaths::isTestModeEnabled());
 
         db = std::make_unique<InMemoryDatabase>();
-        db->setSource(":memory:");
+        db->setConnection(ConnectionInfo::sqliteFile(":memory:"));
         db->open();
 
         QStringList sql;

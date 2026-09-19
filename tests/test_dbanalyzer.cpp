@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <QTemporaryDir>
-#include "database/sqlitedatabase.h"
+#include "database/providerdatabase.h"
 #include "database/dbanalyzer.h"
 #include "database/queryexecutor.h"
 #include "database/databaseinfo.h"
@@ -14,8 +14,8 @@ protected:
         tempDir->setAutoRemove(true);
         dbPath = tempDir->path() + "/test.db";
         
-        db = std::make_unique<SqliteDatabase>();
-        db->setSource(dbPath);
+        db = std::make_unique<ProviderDatabase>();
+        db->setConnection(ConnectionInfo::sqliteFile(dbPath));
         db->open();
 
         // Create test tables
@@ -32,7 +32,7 @@ protected:
 
     std::unique_ptr<QTemporaryDir> tempDir;
     QString dbPath;
-    std::unique_ptr<SqliteDatabase> db;
+    std::unique_ptr<ProviderDatabase> db;
     std::unique_ptr<DbAnalyzer> analyzer;
 
     void runSql(const QString &sql) {
@@ -119,8 +119,8 @@ TEST_F(DbAnalyzerTest, AnalyzeEmptyDatabase) {
     tempDir2.setAutoRemove(true);
     QString emptyDbPath = tempDir2.path() + "/empty.db";
     
-    SqliteDatabase emptyDb;
-    emptyDb.setSource(emptyDbPath);
+    ProviderDatabase emptyDb;
+    emptyDb.setConnection(ConnectionInfo::sqliteFile(emptyDbPath));
     emptyDb.open();
     
     DbAnalyzer emptyAnalyzer(&emptyDb);

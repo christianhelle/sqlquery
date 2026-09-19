@@ -2,7 +2,7 @@
 #include <QTemporaryDir>
 #include <QAbstractItemModel>
 
-#include "database/sqlitedatabase.h"
+#include "database/providerdatabase.h"
 #include "database/dbanalyzer.h"
 #include "database/queryexecutor.h"
 
@@ -11,8 +11,8 @@ protected:
     void SetUp() override {
         tempDir = std::make_unique<QTemporaryDir>();
         dbPath = tempDir->path() + "/paged.db";
-        db = std::make_unique<SqliteDatabase>();
-        db->setSource(dbPath);
+        db = std::make_unique<ProviderDatabase>();
+        db->setConnection(ConnectionInfo::sqliteFile(dbPath));
         db->open();
 
         QStringList sql;
@@ -28,7 +28,7 @@ protected:
 
     std::unique_ptr<QTemporaryDir> tempDir;
     QString dbPath;
-    std::unique_ptr<SqliteDatabase> db;
+    std::unique_ptr<ProviderDatabase> db;
 };
 
 // The whole point: opening a large result set must not read all of it.

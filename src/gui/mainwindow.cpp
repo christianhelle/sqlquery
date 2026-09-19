@@ -271,7 +271,7 @@ void MainWindow::restoreLastSession() {
 }
 
 void MainWindow::saveSession() const {
-    sessionManager->saveSession(this->database->getFilename(), ui->textEdit->toPlainText());
+    sessionManager->saveSession(this->database->connection().toUrl(), ui->textEdit->toPlainText());
 }
 
 void MainWindow::createNewFile() {
@@ -287,11 +287,11 @@ void MainWindow::openDatabase(const QString &filename) {
     if (blockedByExport())
         return;
 
-    if (!this->database->getFilename().isEmpty()) {
+    if (!this->database->connection().isEmpty()) {
         this->queryPresenter->clearResults();
     }
 
-    this->database->setSource(filename);
+    this->database->setConnection(ConnectionInfo::sqliteFile(filename));
     if (!this->database->open()) {
         return;
     }
@@ -323,8 +323,7 @@ void MainWindow::appExit() const {
 void MainWindow::shrink() const {
     if (blockedByExport())
         return;
-    if (const QString filename = this->database->getFilename();
-        filename.isNull() || filename.isEmpty())
+    if (this->database->connection().isEmpty())
         return;
 
     this->database->shrink();

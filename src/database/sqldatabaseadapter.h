@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "idatabase.h"
+#include "sqldialect.h"
 
 // Shared base for the IDatabase adapters. They differ only in how their
 // connection is named, created and opened; everything that reads from an open
@@ -13,7 +14,17 @@ class SqlDatabaseAdapter : public IDatabase {
 public:
     void close() override;
 
-    [[nodiscard]] QString getFilename() const override { return source; }
+    [[nodiscard]] ConnectionInfo connection() const override { return info; }
+
+    [[nodiscard]] const SqlDialect &dialect() const override { return *sqlDialect; }
+
+    [[nodiscard]] QString lastError() const override;
+
+    [[nodiscard]] bool canShrink() const override { return !sqlDialect->shrinkStatement().isEmpty(); }
+
+    // Runs the Provider's shrink statement. Does nothing on a closed Database:
+    // opening one is the job of whoever owns it.
+    void shrink() override;
 
     QueryResult runStatement(const QString &sql) override;
 
@@ -27,7 +38,8 @@ public:
 
 protected:
     QSqlDatabase database;
-    QString source;
+    ConnectionInfo info;
+    const SqlDialect *sqlDialect = &SqlDialect::forProvider(Provider::Sqlite);
 };
 
 #endif // SQLDATABASEADAPTER_H

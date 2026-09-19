@@ -7,23 +7,35 @@
 #include <QVariant>
 #include <functional>
 
+#include "connectioninfo.h"
 #include "queryresult.h"
 
 class QAbstractItemModel;
+class SqlDialect;
 
 class IDatabase {
 public:
     virtual ~IDatabase() = default;
 
-    virtual void setSource(const QString &filename) = 0;
+    // Points the Database at a Connection. Does not open it.
+    virtual void setConnection(const ConnectionInfo &connection) = 0;
+
+    [[nodiscard]] virtual ConnectionInfo connection() const = 0;
+
+    // How SQL is written for this Database's Provider.
+    [[nodiscard]] virtual const SqlDialect &dialect() const = 0;
 
     virtual bool open() = 0;
 
     virtual void close() = 0;
 
-    virtual void shrink() = 0;
+    // Why the last open() failed; empty when it did not.
+    [[nodiscard]] virtual QString lastError() const = 0;
 
-    [[nodiscard]] virtual QString getFilename() const = 0;
+    // Whether the Provider can reclaim unused space at all.
+    [[nodiscard]] virtual bool canShrink() const = 0;
+
+    virtual void shrink() = 0;
 
     virtual QueryResult runStatement(const QString &sql) = 0;
 

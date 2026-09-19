@@ -9,7 +9,7 @@ DbAnalyzer::DbAnalyzer(IDatabase *database)
 }
 
 bool DbAnalyzer::analyze(DatabaseInfo &info) const {
-    const QFileInfo file(this->database->getFilename());
+    const QFileInfo file(this->database->connection().filePath);
 
     info.filename = file.fileName();
     info.size = file.size();
