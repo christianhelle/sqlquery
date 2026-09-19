@@ -265,8 +265,8 @@ void MainWindow::openRecentFile() {
 void MainWindow::restoreLastSession() {
     SessionState state;
     sessionManager->restoreSession(&state);
-    if (!state.sqliteFile.isEmpty()) {
-        this->openDatabase(state.sqliteFile);
+    if (!state.connection.isEmpty()) {
+        this->openDatabase(state.connection);
         ui->textEdit->setPlainText(state.query);
     }
 }

@@ -16,7 +16,8 @@ struct WindowState {
 };
 
 struct SessionState {
-    QString sqliteFile;
+    // The last-opened Connection, as ConnectionInfo::toUrl writes it.
+    QString connection;
     QString query;
     QString lastUsedExportPath;
 };
@@ -33,7 +34,7 @@ public:
 
     static void getSessionState(SessionState *state);
 
-    static void setSessionState(const QString &sqliteFile,
+    static void setSessionState(const QString &connection,
                                 const QString &query);
 
     static void setLastUsedExportPath(const QString &path);

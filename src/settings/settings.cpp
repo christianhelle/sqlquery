@@ -64,17 +64,17 @@ void Settings::setMainWindowState(const WindowState &state) {
 void Settings::getSessionState(SessionState *state) {
     QSettings settings;
     settings.beginGroup("Session");
-    state->sqliteFile = settings.value("sqlite_file").toString();
+    state->connection = settings.value("connection").toString();
     state->query = settings.value("query").toString();
     state->lastUsedExportPath = settings.value("last_used_export_path").toString();
     settings.endGroup();
 }
 
-void Settings::setSessionState(const QString &sqliteFile,
+void Settings::setSessionState(const QString &connection,
                                const QString &query) {
     QSettings settings;
     settings.beginGroup("Session");
-    settings.setValue("sqlite_file", sqliteFile);
+    settings.setValue("connection", connection);
     settings.setValue("query", query);
     settings.endGroup();
 }

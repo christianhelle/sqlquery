@@ -18,7 +18,7 @@ public:
     static void init();
 
     // Session state
-    void saveSession(const QString &sqliteFile, const QString &query);
+    void saveSession(const QString &connection, const QString &query);
     void restoreSession(SessionState *state) const;
 
     // Window state

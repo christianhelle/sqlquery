@@ -17,8 +17,8 @@ QString SessionManager::getSettingsFolder() {
     return Settings::getSettingsFolder();
 }
 
-void SessionManager::saveSession(const QString &sqliteFile, const QString &query) {
-    Settings::setSessionState(sqliteFile, query);
+void SessionManager::saveSession(const QString &connection, const QString &query) {
+    Settings::setSessionState(connection, query);
 }
 
 void SessionManager::restoreSession(SessionState *state) const {
