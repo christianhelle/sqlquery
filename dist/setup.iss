@@ -40,7 +40,7 @@ Source: "..\build\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubd
 Source: "..\src\resources\icon.ico"; DestDir: "{app}"; DestName: "icon.ico"
 
 [Icons]
-Name: "{commondesktop}\SQL Query Analyzer"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppIcon}"; Tasks: DesktopIcon
+Name: "{commondesktop}\SQL Query Analyzer"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\icon.ico"; Tasks: DesktopIcon
 
 [Tasks]
 Name: "DesktopIcon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
