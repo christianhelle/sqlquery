@@ -10,7 +10,7 @@ set(app_icon_macos "src/resources/icon.icns")
 set_source_files_properties(${app_icon_macos}
     PROPERTIES
     MACOSX_PACKAGE_LOCATION
-    "src/resources")
+    "Resources")
 
 # Set the executable name based on platform or custom parameter
 if(DEFINED EXECUTABLE_NAME)
@@ -94,13 +94,14 @@ set(COMMON_SRCS
   src/cli/script.h)
 
 if(COMMAND qt_add_executable)
-  qt_add_executable(${APP_NAME} WIN32 MACOSX_BUNDLE ${COMMON_SRCS} $<$<PLATFORM_ID:Windows>:${app_icon_resource_windows}>)
+  qt_add_executable(${APP_NAME} WIN32 MACOSX_BUNDLE ${COMMON_SRCS} $<$<PLATFORM_ID:Windows>:${app_icon_resource_windows}> $<$<PLATFORM_ID:Darwin>:${app_icon_macos}>)
 else()
   add_executable(${APP_NAME}
     $<$<PLATFORM_ID:Windows>:WIN32>
     $<$<PLATFORM_ID:Darwin>:MACOSX_BUNDLE>
     ${COMMON_SRCS}
     $<$<PLATFORM_ID:Windows>:${app_icon_resource_windows}>
+    $<$<PLATFORM_ID:Darwin>:${app_icon_macos}>
   )
 endif()
 
