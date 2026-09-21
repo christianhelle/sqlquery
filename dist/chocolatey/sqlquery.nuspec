@@ -33,7 +33,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <title>SQL Query Analyzer</title>
     <authors>Christian Helle</authors>
     <projectUrl>https://github.com/christianhelle/sqlquery</projectUrl>
-    <iconUrl>https://github.com/christianhelle/sqlquery/blob/eaed37e7ba55f4faa6cd8402eb5fcc8aacccb312/images/sqlite-icon.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/christianhelle/sqlquery/master/images/logo.png</iconUrl>
     <copyright>Christian Resma Helle 2015</copyright>
     <licenseUrl>https://raw.githubusercontent.com/christianhelle/sqlquery/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
