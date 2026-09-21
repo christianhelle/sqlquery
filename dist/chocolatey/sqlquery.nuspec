@@ -33,12 +33,12 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <title>SQL Query Analyzer</title>
     <authors>Christian Helle</authors>
     <projectUrl>https://github.com/christianhelle/sqlquery</projectUrl>
-    <iconUrl>https://github.com/christianhelle/sqlquery/blob/eaed37e7ba55f4faa6cd8402eb5fcc8aacccb312/images/sqlite-icon.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/christianhelle/sqlquery/main/images/logo.png</iconUrl>
     <copyright>Christian Resma Helle 2015</copyright>
-    <licenseUrl>https://raw.githubusercontent.com/christianhelle/sqlquery/master/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/christianhelle/sqlquery/main/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectSourceUrl>https://github.com/christianhelle/sqlquery</projectSourceUrl>
-    <docsUrl>https://github.com/christianhelle/sqlquery/blob/master/README.md</docsUrl>
+    <docsUrl>https://github.com/christianhelle/sqlquery/blob/main/README.md</docsUrl>
     <bugTrackerUrl>https://github.com/christianhelle/sqlquery/issues</bugTrackerUrl>
     <tags>sqlite postgresql sql-server mysql mariadb database</tags>
     <summary>A fast and lightweight cross-platform GUI tool for querying and manipulating SQLite, PostgreSQL, SQL Server and MySQL databases</summary>
