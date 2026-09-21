@@ -12,5 +12,5 @@
     <path fill="#E8973A" d="M128 128 L134.28 8.16 A120 120 0 0 1 247.84 121.72 Z" transform="rotate(270 128 128)"/>
   </g>
   <circle cx="128" cy="128" r="44" fill="#16202B"/>
-  <path d="M115 104 L142 128 L115 152" fill="none" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M116 107 L139 128 L116 149" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
