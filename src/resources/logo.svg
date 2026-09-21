@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="SQL Query Analyzer">
+  <title>SQL Query Analyzer</title>
+  <desc>A database platter split into four coloured quadrants, one per supported provider, around a dark hub carrying a query chevron.</desc>
+  <!-- Design master. dist/icons/generate-icons.py mirrors these constants;
+       change both together. Centre 128,128 - outer radius 120 - hub radius 44.
+       Each wedge spans 90 degrees inset by 3 degrees per side, so the gaps
+       between them are transparent and the mark sits on any background. -->
+  <g>
+    <path fill="#1B9AAA" d="M128 128 L134.28 8.16 A120 120 0 0 1 247.84 121.72 Z"/>
+    <path fill="#D9453D" d="M128 128 L134.28 8.16 A120 120 0 0 1 247.84 121.72 Z" transform="rotate(90 128 128)"/>
+    <path fill="#4B6BD6" d="M128 128 L134.28 8.16 A120 120 0 0 1 247.84 121.72 Z" transform="rotate(180 128 128)"/>
+    <path fill="#E8973A" d="M128 128 L134.28 8.16 A120 120 0 0 1 247.84 121.72 Z" transform="rotate(270 128 128)"/>
+  </g>
+  <circle cx="128" cy="128" r="44" fill="#16202B"/>
+  <path d="M115 104 L142 128 L115 152" fill="none" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
