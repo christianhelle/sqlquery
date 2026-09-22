@@ -12,7 +12,10 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{a70ba728-12cd-4bfa-aabc-f216dd8ec144}
+; Changed when the app was rebranded from SQLite Query Analyzer to SQL Query
+; Analyzer. The old AppId made Setup reuse the previous install's remembered
+; directory, so upgrades kept landing in the old folder.
+AppId={{e6c50707-654a-41c2-8935-44dc2281b5a2}
 
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
