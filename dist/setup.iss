@@ -7,12 +7,19 @@
 #define MyAppURL "https://github.com/christianhelle/sqlquery"
 #define MyAppExeName "SQLQueryAnalyzer.exe"
 #define MyAppIcon "..\src\resources\icon.ico"
+; Application-specific ProgID. Never use a generic name like "SQLite Database"
+; here: every SQLite tool claims it, and whichever one uninstalls last takes
+; the association down with it.
+#define MyAppProgId "SQLQueryAnalyzer.sqlite"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{a70ba728-12cd-4bfa-aabc-f216dd8ec144}
+; Changed when the app was rebranded from SQLite Query Analyzer to SQL Query
+; Analyzer. The old AppId made Setup reuse the previous install's remembered
+; directory, so upgrades kept landing in the old folder.
+AppId={{e6c50707-654a-41c2-8935-44dc2281b5a2}
 
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -22,6 +29,12 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+; The app is 64-bit Qt built with vcvars64, so refuse 32-bit Windows outright
+; rather than installing something that cannot run. Installing in 64-bit mode
+; also keeps the uninstall entry in the 64-bit registry view, where tooling
+; looks for it, instead of under WOW6432Node.
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 DefaultDirName={pf64}\SQL Query Analyzer
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
@@ -40,14 +53,23 @@ Source: "..\build\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubd
 Source: "..\src\resources\icon.ico"; DestDir: "{app}"; DestName: "icon.ico"
 
 [Icons]
-Name: "{commondesktop}\SQL Query Analyzer"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppIcon}"; Tasks: DesktopIcon
+Name: "{commondesktop}\SQL Query Analyzer"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\icon.ico"; Tasks: DesktopIcon
 
 [Tasks]
 Name: "DesktopIcon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Registry]
-Root: HKLM; Subkey: "Software\Classes\.sqlite"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletevalue
-Root: HKLM; Subkey: "Software\Classes\.sqlite3"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletevalue
-Root: HKLM; Subkey: "Software\Classes\SQLite Database"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Classes\SQLite Database\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
-Root: HKLM; Subkey: "Software\Classes\SQLite Database\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+; The ProgID is ours alone, so uninsdeletekey only ever removes our own keys.
+Root: HKLM; Subkey: "Software\Classes\{#MyAppProgId}"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Classes\{#MyAppProgId}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
+Root: HKLM; Subkey: "Software\Classes\{#MyAppProgId}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+
+; Claim the default association, as before. uninsdeletevalue clears only this
+; value on uninstall; it cannot put back whatever another tool had set.
+Root: HKLM; Subkey: "Software\Classes\.sqlite"; ValueType: string; ValueName: ""; ValueData: "{#MyAppProgId}"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Classes\.sqlite3"; ValueType: string; ValueName: ""; ValueData: "{#MyAppProgId}"; Flags: uninsdeletevalue
+
+; Also register under Open With, so other SQLite tools keep their entries and
+; ours disappears cleanly with the app instead of orphaning the extension.
+Root: HKLM; Subkey: "Software\Classes\.sqlite\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppProgId}"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Classes\.sqlite3\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppProgId}"; ValueData: ""; Flags: uninsdeletevalue
