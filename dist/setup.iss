@@ -7,6 +7,10 @@
 #define MyAppURL "https://github.com/christianhelle/sqlquery"
 #define MyAppExeName "SQLQueryAnalyzer.exe"
 #define MyAppIcon "..\src\resources\icon.ico"
+; Application-specific ProgID. Never use a generic name like "SQLite Database"
+; here: every SQLite tool claims it, and whichever one uninstalls last takes
+; the association down with it.
+#define MyAppProgId "SQLQueryAnalyzer.sqlite"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -49,8 +53,17 @@ Name: "{commondesktop}\SQL Query Analyzer"; Filename: "{app}\{#MyAppExeName}"; W
 Name: "DesktopIcon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Registry]
-Root: HKLM; Subkey: "Software\Classes\.sqlite"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletevalue
-Root: HKLM; Subkey: "Software\Classes\.sqlite3"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletevalue
-Root: HKLM; Subkey: "Software\Classes\SQLite Database"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletekey
-Root: HKLM; Subkey: "Software\Classes\SQLite Database\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
-Root: HKLM; Subkey: "Software\Classes\SQLite Database\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+; The ProgID is ours alone, so uninsdeletekey only ever removes our own keys.
+Root: HKLM; Subkey: "Software\Classes\{#MyAppProgId}"; ValueType: string; ValueName: ""; ValueData: "SQLite Database"; Flags: uninsdeletekey
+Root: HKLM; Subkey: "Software\Classes\{#MyAppProgId}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
+Root: HKLM; Subkey: "Software\Classes\{#MyAppProgId}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+
+; Claim the default association, as before. uninsdeletevalue clears only this
+; value on uninstall; it cannot put back whatever another tool had set.
+Root: HKLM; Subkey: "Software\Classes\.sqlite"; ValueType: string; ValueName: ""; ValueData: "{#MyAppProgId}"; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Classes\.sqlite3"; ValueType: string; ValueName: ""; ValueData: "{#MyAppProgId}"; Flags: uninsdeletevalue
+
+; Also register under Open With, so other SQLite tools keep their entries and
+; ours disappears cleanly with the app instead of orphaning the extension.
+Root: HKLM; Subkey: "Software\Classes\.sqlite\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppProgId}"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKLM; Subkey: "Software\Classes\.sqlite3\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppProgId}"; ValueData: ""; Flags: uninsdeletevalue
