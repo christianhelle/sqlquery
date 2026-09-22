@@ -29,6 +29,12 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+; The app is 64-bit Qt built with vcvars64, so refuse 32-bit Windows outright
+; rather than installing something that cannot run. Installing in 64-bit mode
+; also keeps the uninstall entry in the 64-bit registry view, where tooling
+; looks for it, instead of under WOW6432Node.
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 DefaultDirName={pf64}\SQL Query Analyzer
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
